@@ -4,6 +4,8 @@ class Preloader extends Phaser.State {
 
 		game.load.image('tiles', 'Ressources/tileset.png');
 
+		game.load.spritesheet('dude', 'Ressources/dude.png', 32, 48);
+
 	}
 
 	create () {
