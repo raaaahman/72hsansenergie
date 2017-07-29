@@ -4,7 +4,7 @@ class Boot extends Phaser.State {
 	}
 
 	create () {
-
+		game.time.desiredFps = 30
 		game.state.start('Preloader')
 	}
 }
