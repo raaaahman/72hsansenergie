@@ -17,6 +17,8 @@ var locked = false
 var targetX = 3
 var targetY = 2
 
+var speed = 150
+
 class Main extends Phaser.State {
 
 	create () {
@@ -39,6 +41,7 @@ class Main extends Phaser.State {
 		game.physics.startSystem(Phaser.Physics.ARCADE)
     game.time.desiredFps = 30
     player = game.add.sprite(targetX*cellSize, targetY*cellSize, 'dude')
+		//player.anchor.set(0, 0.5)
     game.physics.enable(player, Phaser.Physics.ARCADE)
 		player.animations.add('left', [0, 1, 2, 3], 10, true)
     player.animations.add('turn', [4], 20, true)
@@ -81,34 +84,31 @@ class Main extends Phaser.State {
 			dir = 0
 
 			if (cursors.left.isDown)
-			{
-				player.body.velocity.x = -150
 				dir = 1
-			}
 			else if (cursors.right.isDown)
-			{
-				player.body.velocity.x = 150
 				dir = 2
-			}
 			else if (cursors.up.isDown)
-			{
-				player.body.velocity.y = -150
 				dir = 4
-			}
 			else if (cursors.down.isDown)
-			{
-				player.body.velocity.y = 150
 				dir = 3
-			}
-
-			targetX += dirX[dir]
-			targetY += dirY[dir]
 
 			if(dir > 0)
 			{
-				locked = true;
-				// console.log("locked in dir",dir)
-				// console.log("New target is",targetX, targetY)
+
+				var newTargetX = targetX + dirX[dir]
+				var newTargetY = targetY + dirY[dir]
+
+				console.log(map.getTile(newTargetX, newTargetY, 'walls', true).index)
+
+				if (map.getTile(newTargetX, newTargetY, 'walls', true).index !== 8) {
+					targetX = newTargetX
+					targetY = newTargetY
+
+					player.body.velocity.x = dirX[dir] * speed
+					player.body.velocity.y = dirY[dir] * speed
+
+					locked = true
+				}
 			}
 			else
 			{
