@@ -50,7 +50,23 @@ class pathFinder {
 		this.grid = new Array(this.mazeSize);
 		this.distances = new Array(this.mazeSize);
 		this.distMax = 1000;
-		this.queue = [];
+		this.queue = {tab:[], offset:0, length:0,
+			push: function(v){
+				this.tab.push(v);
+				this.length++;
+			},
+			
+			shift: function()
+			{
+				if(this.length <= 0)
+					console.error("Error while shifting queue: queue is empty!");
+				
+				var val = this.tab[this.offset];
+				this.offset++;
+				this.length--;
+				return val;
+			}
+		};
 		this.initPathFinding(mazeArray);
 	}
 	
@@ -132,25 +148,31 @@ class pathFinder {
 	
 }
 
+
 //Tests:
 //Instanciate a pathFinder then compute distances!
 
-//~ var maze = 
-//~ [
-//~ 1,2,0,0,0,0,0,0,0,0,
-//~ 2,2,0,0,0,0,0,0,0,0,
-//~ 0,0,2,2,1,2,2,1,0,0,
-//~ 0,0,2,2,2,2,2,2,0,0,
-//~ 0,0,2,2,2,2,2,2,0,0,
-//~ 0,0,0,2,2,2,0,0,0,0,
-//~ 0,0,0,2,2,0,0,0,0,0,
-//~ 0,0,0,0,2,0,0,0,0,0,
-//~ 0,0,0,0,1,0,0,0,2,2,
-//~ 0,0,0,0,0,0,0,0,2,1
-//~ ];
+function TEST_PathFinder()
+{
 
+	var maze = 
+	[
+	1,2,0,0,0,0,0,0,0,0,
+	2,2,0,0,0,0,0,0,0,0,
+	0,0,2,2,1,2,2,1,0,0,
+	0,0,2,2,2,2,2,2,0,0,
+	0,0,2,2,2,2,2,2,0,0,
+	0,0,0,2,2,2,0,0,0,0,
+	0,0,0,2,2,0,0,0,0,0,
+	0,0,0,0,2,0,0,0,0,0,
+	0,0,0,0,1,0,0,0,2,2,
+	0,0,0,0,0,0,0,0,2,1
+	];
+	
+	
+	var pf = new pathFinder(maze,10,10);
+	pf.displayGrid();
+	pf.computeDistances(4,4);
+	pf.displayDistances();
 
-//~ var pf = new pathFinder(maze,10,10);
-//~ pf.displayGrid();
-//~ pf.computeDistances(4,4);
-//~ pf.displayDistances();
+}
