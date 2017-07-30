@@ -1,9 +1,10 @@
 class Entity extends Phaser.Sprite {
 
-	constructor(game, startX, startY, img, speed = 150) {
+	constructor(game, startX, startY, img, speed = 150, unlockedCallback = function () {}) {
 		super(game, startX, startY, img)
 
 		this.locked 	= false
+		this.unlockedCallback = unlockedCallback
 		this.dir 			= 'NONE'
 		this.posX			= startX / cellSize
 		this.posY			= startY / cellSize
@@ -21,7 +22,7 @@ class Entity extends Phaser.Sprite {
 		game.state.getCurrentState().stage.addChild(this)
 	}
 
-	//This function is used to bind event to particular tiles 
+	//This function is used to bind event to particular tiles
 	setTrigger(tileIndex, callback, context) {
 		var name = 'onEnterTile' + tileIndex
 		this.events[name] = new Phaser.Signal()
@@ -68,6 +69,8 @@ class Entity extends Phaser.Sprite {
 				this.body.velocity.x = 0
 				this.body.velocity.y = 0
 				this.locked = false;
+
+				this.unlockedCallback()
 				// console.log("Target Reached!")
 			}
 
