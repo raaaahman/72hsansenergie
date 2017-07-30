@@ -43,9 +43,9 @@ class Entity extends Phaser.Sprite {
 			var cellX = Math.round(this.posX)
 			var cellY = Math.round(this.posY)
 
-			this.tileType = map.getTile(cellX, cellY, 'background', true).index
+			this.tileType = map.getTile(cellX, cellY, 'mazeLayer', true).index
 
-			map.getTile(cellX, cellY, 'foreground', true).index > 0 ? this.isLit = true : this.isLit = false
+			//map.getTile(cellX, cellY, 'foreground', true).index > 0 ? this.isLit = true : this.isLit = false
 
 			//console.log(map.getTile(cellX, cellY, 'foreground', true).index)
 			//console.log(this.isLit)
@@ -90,7 +90,7 @@ class Entity extends Phaser.Sprite {
 			//console.log(newTargetX, newTargetY)
 
 
-			if (map.getTile(newTargetX, newTargetY, 'walls', true).index !== 8) {
+			if (map.getTile(newTargetX, newTargetY, 'mazeLayer', true).index >= 26) {
 				this.targetX = newTargetX
 				this.targetY = newTargetY
 

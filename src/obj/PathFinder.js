@@ -28,7 +28,7 @@ class PathFinder {
 		{
 			for(var i = 0; i < this.mazeWidth; i++)
 			{
-					var id = mazeArray.getTile(i,j,'walls',true).index;
+					var id = mazeArray.getTile(i,j,'mazeLayer',true).index;
 					var pos = (1 + i) + (this.mazeWidth + 2) * (j + 1);
 
 					this.grid[pos] = this.emptyCell;
