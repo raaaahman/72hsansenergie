@@ -1,4 +1,4 @@
-var map, ground, walls, light, player, cursors, actionButton
+var map, ground, walls, light, player, torch, cursors, actionButton
 
 const DIR = {
 	NONE: {x: 0, y: 0},
@@ -40,14 +40,20 @@ class Main extends Phaser.State {
 
 
 		//Examples of binding events to enter tile function
-		player.setTrigger(2, this.enteredCorridor, this)
+
+		//player.setTrigger(2, this.enteredCorridor, this)
+
+		//Add torch
+		torch = this.add.sprite(cellSize * 3.5, cellSize * 2.5, 'torchHigh')
+		torch.anchor = {x: 0.5, y: 0.5}
 
 	}
 
 	update() {
 
 		player.checkPos()
-
+		torch.x = player.x
+		torch.y = player.y
 
 		if (cursors.left.isDown)
 			player.move('LEFT')
@@ -60,15 +66,17 @@ class Main extends Phaser.State {
 
 		//console.log(game.input.mousePointer.worldX, game.input.mousePointer.worldY)
 		var mouse = game.input.mousePointer
-		player.rotation = Math.atan2(mouse.worldY - player.body.y, mouse.worldX - player.body.x)
+		var viewAngle = Math.atan2(mouse.worldY - player.body.y, mouse.worldX - player.body.x)
+		player.rotation = viewAngle
+		torch.rotation = viewAngle
 
-		if (actionButton.isDown)
+		if (mouse.isDown)
 			console.log("action!")
 	}
 
-	render () {
+	/*render () {
 		game.debug.body(player)
-	}
+	}*/
 
 	enteredCorridor() {
 		console.log("It's a corridor")
