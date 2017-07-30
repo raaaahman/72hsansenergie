@@ -29,7 +29,8 @@ class Main extends Phaser.State {
 
 		this.physics.startSystem(Phaser.Physics.ARCADE)
 
-    player = new Entity(game, 96, 64, 'dude')
+    player = new Entity(game, cellSize * 3.5, cellSize * 2.5, 'dude')
+		player.anchor = {x: 0.5, y: 0.33}
     this.physics.enable(player, Phaser.Physics.ARCADE)
 		player.animations.add('left', [0, 1, 2, 3], 10, true)
     player.animations.add('turn', [4], 20, true)
@@ -39,12 +40,7 @@ class Main extends Phaser.State {
 
 
 		//Examples of binding events to enter tile function
-		player.events.onEnterTile.add(this.entered, this)
-
-		player.shout = function () {
-			console.log("Oh yeah!")
-		}
-		player.events.onEnterTile.add(player.shout, player)
+		player.setTrigger(2, this.enteredCorridor, this)
 
 	}
 
@@ -62,13 +58,20 @@ class Main extends Phaser.State {
 		else if (cursors.down.isDown)
 			player.move('DOWN')
 
+		//console.log(game.input.mousePointer.worldX, game.input.mousePointer.worldY)
+		var mouse = game.input.mousePointer
+		player.rotation = Math.atan2(mouse.worldY - player.body.y, mouse.worldX - player.body.x)
 
 		if (actionButton.isDown)
 			console.log("action!")
 	}
 
-	entered() {
-		console.log("I'm in!")
+	render () {
+		game.debug.body(player)
+	}
+
+	enteredCorridor() {
+		console.log("It's a corridor")
 	}
 
 }
