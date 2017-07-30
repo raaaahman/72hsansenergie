@@ -17,11 +17,20 @@ class Entity extends Phaser.Sprite {
 
 		this.speed 		= speed
 
-		//Add an event for entering a tile
-		this.events.onEnterTile = new Phaser.Signal()
-
 		//Tie the entity to the stage so it gets rendered
 		game.state.getCurrentState().stage.addChild(this)
+	}
+
+	//This function is used to bind event to particular tiles 
+	setTrigger(tileIndex, callback, context) {
+		var name = 'onEnterTile' + tileIndex
+		this.events[name] = new Phaser.Signal()
+
+		if (!context) {
+			context = game.state.getCurrentState()
+		}
+
+		this.events[name].add(callback, context)
 	}
 
 	//Update the entity's coordinates and stats depending on its position
@@ -41,7 +50,11 @@ class Entity extends Phaser.Sprite {
 			//console.log(this.isLit)
 
 			if (cellX !== this.lastX || cellY !== this.lastY) {
-				this.events.onEnterTile.dispatch(this.tileType)
+				var name = 'onEnterTile' + this.tileType
+				if (this.events[name]) {
+					this.events[name].dispatch()
+				}
+				//this.events.onEnterTile.dispatch(this.tileType)
 
 				this.lastX = cellX
 				this.lastY = cellY
