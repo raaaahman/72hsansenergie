@@ -1,5 +1,5 @@
 
-var map, mapLayer, ground, walls, light, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
+var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -34,30 +34,67 @@ class Main extends Phaser.State {
 		//Select the level
 		var levelName = 'level' + currentLevel
 
-		//Creating the map and the layers
+		/*Tiles from 1 to 26: walls
+		*	27 : dark floor
+		* 28 : monster spawn
+		* 29 : player spawn
+		* 30 & 31 : player goals
+		* 32 : it's a trap!
+		* 33 : vent
+		* 34 : blinking light
+		* 35 : stable light
+		*/
+
+		//MAP
     map = this.add.tilemap(levelName)
 
     map.addTilesetImage('mazeTiles', 'tiles')
 
 		mapLayer = map.createLayer('mazeLayer')
 
+		lights = map.createBlankLayer('lights', 50, 50, cellSize, cellSize)
+
+		for (var j = 0; j < mapLayer.layer.height; j++) {
+			for (var i = 0; i < mapLayer.layer.width; i++) {
+
+				switch (mapLayer.layer.data[j][i].index) {
+					case 28:
+						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 180, this.enemyCallback)
+						map.putTile(27, i, j, mapLayer)
+						break
+					case 29:
+						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallBack)
+						map.putTile(35, i, j, mapLayer)
+						break
+					case 35:
+						map.putTile(27, i, j, lights)
+						break
+					default:
+						break
+				}
+			}
+		}
+
 		mapLayer.scale.set(scale)
+		lights.scale.set(scale)
 
 		mapLayer.resizeWorld()
+
+
 
 		this.physics.startSystem(Phaser.Physics.ARCADE)
 
 		path = new PathFinder(map)
 
-		enemyCallback = this.enemyCallback
-
 		path.displayGrid()
 
 		sprites = this.add.group()
+		sprites.addChild(lights)
 
 		sprites.scale.set(scale);
 
-		enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
+		//ENEMY
+		//enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
 		sprites.addChild(enemy)
 		enemy.anchor = {x: 0.5, y: 0.33}
 		this.physics.enable(enemy, Phaser.Physics.ARCADE)
@@ -65,17 +102,22 @@ class Main extends Phaser.State {
 		enemy.animations.add('turn', [4], 20, true)
 		enemy.animations.add('right', [5, 6, 7, 8], 10, true)
 
+		enemyCallback = this.enemyCallback
 
-		//Add torch
+		//TORCH
 		torch = this.add.sprite(cellSize * 1.5, cellSize * 1.5, 'torch')
 		torch.animations.add('full', [2])
 		torch.animations.add('off', [0])
 		torch.animations.add('low', [1])
 		sprites.addChild(torch)
-		torch.bringToTop()
+		//torch.moveUp()
 		torch.anchor = {x: 0.5, y: 0.5}
 
-    player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude', 150, this.playerCallBack)
+		//Lighted tiles
+		lights.bringToTop()
+
+		//PLAYER
+    //player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude', 150, this.playerCallBack)
 		player.anchor = {x: 0.5, y: 0.33}
 		sprites.addChild(player)
 		player.bringToTop()
@@ -156,10 +198,6 @@ class Main extends Phaser.State {
 	/*render () {
 		game.debug.body(player)
 	}*/
-
-	enteredCorridor() {
-		console.log("It's a corridor")
-	}
 
 	enemyCallback () {
 
