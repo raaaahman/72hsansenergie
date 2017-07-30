@@ -20,17 +20,20 @@ class Entity extends Phaser.Sprite {
 
 	//Update the entity's coordinates and stats depending on its position
 	checkPos () {
-		this.posX = this.body.x / cellSize
-		this.posY = this.body.y / cellSize
-		var cellX = Math.round(this.posX)
-		var cellY = Math.round(this.posY)
-
-		this.tileType = map.getTile(cellX, cellY, 'background', true).index
-
-		map.getTile(cellX, cellY, 'foreground', true).index ? this.isLit = true : this.isLit = false
-
 		if(this.locked)
 		{
+			this.posX = this.body.x / cellSize
+			this.posY = this.body.y / cellSize
+			var cellX = Math.round(this.posX)
+			var cellY = Math.round(this.posY)
+
+			this.tileType = map.getTile(cellX, cellY, 'background', true).index
+
+			map.getTile(cellX, cellY, 'foreground', true).index > 0 ? this.isLit = true : this.isLit = false
+
+			//console.log(map.getTile(cellX, cellY, 'foreground', true).index)
+			//console.log(this.isLit)
+
 
 			if( ( (this.posX - this.targetX) * DIR[this.dir].x > 0) || ( (this.posY - this.targetY) * DIR[this.dir].y > 0) )
 			{
