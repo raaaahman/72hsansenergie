@@ -37,16 +37,38 @@ class Main extends Phaser.State {
 		cursors = this.input.keyboard.createCursorKeys()
     actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
 
+
+		//Examples of binding events to enter tile function
+		player.events.onEnterTile.add(this.entered, this)
+
+		player.shout = function () {
+			console.log("Oh yeah!")
+		}
+		player.events.onEnterTile.add(player.shout, player)
+
 	}
 
 	update() {
 
-		player.getPos()
+		player.checkPos()
 
-		player.move()
+
+		if (cursors.left.isDown)
+			player.move('LEFT')
+		else if (cursors.right.isDown)
+			player.move('RIGHT')
+		else if (cursors.up.isDown)
+			player.move('UP')
+		else if (cursors.down.isDown)
+			player.move('DOWN')
+
 
 		if (actionButton.isDown)
 			console.log("action!")
+	}
+
+	entered() {
+		console.log("I'm in!")
 	}
 
 }
