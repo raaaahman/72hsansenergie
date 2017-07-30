@@ -1,4 +1,4 @@
-var map, ground, walls, light, sprites, player, enemy, torch, path, cursors, actionButton
+var map, ground, walls, light, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -43,6 +43,8 @@ class Main extends Phaser.State {
 
 		path = new PathFinder(map)
 
+		enemyCallback = this.enemyCallback
+
 		path.displayGrid()
 
 		sprites = this.add.group()
@@ -81,6 +83,7 @@ class Main extends Phaser.State {
 		//player.setTrigger(2, this.enteredCorridor, this)
 
 		player.move('UP')
+		path.computeDistances(player.targetX, player.targetY)
 		this.enemyCallback();
 	}
 
@@ -125,12 +128,20 @@ class Main extends Phaser.State {
 	}
 
 	enemyCallback () {
-		path.computeDistances(player.targetX, player.targetY)
-		var dir = path.worstDir(enemy.targetX, enemy.targetY)
-
-		console.log('enemy move ',dirNum[dir]);
-
-		enemy.move(dirNum[dir])
+		
+		if(Math.random() < 0.7)
+			path.computeDistances(player.targetX, player.targetY)
+		var dir = path.bestDir(enemy.targetX, enemy.targetY)
+		
+		if(dir < 4)
+		{
+			console.log('enemy move ',dirNum[dir]);
+			enemy.move(dirNum[dir])
+		}
+		else
+		{
+			 setTimeout(enemyCallback, 250 + Math.random()*500);
+		}
 	}
 
 }

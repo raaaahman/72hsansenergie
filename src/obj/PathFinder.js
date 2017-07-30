@@ -59,6 +59,7 @@ class PathFinder {
 		this.grid = new Array(this.mazeSize);
 		this.distances = new Array(this.mazeSize);
 		this.distMax = 1000;
+		this.lastBestDist = this.distMax;
 		this.queue = {tab:[], offset:0, length:0,
 			push: function(v){
 				this.tab.push(v);
@@ -152,6 +153,11 @@ class PathFinder {
 				bestDir = i;
 			}
 		}
+		
+		this.LastBestDist = dist;
+		
+		if(dist < 2)
+			return 4;
 
 		return bestDir;
 	}
