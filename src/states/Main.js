@@ -16,8 +16,9 @@ const dirNum = [
 	'NONE'
 ]
 
+var scale = 0
 
-var cellSize = 32
+var cellSize = 32 * scale
 
 
 class Main extends Phaser.State {
@@ -35,6 +36,16 @@ class Main extends Phaser.State {
 		walls = map.createLayer('walls')
 
 		light = map.createLayer('foreground')
+		
+		
+		walls.scale.set(scale);
+    	walls.resizeWorld();
+    	
+    	light.scale.set(scale);
+    	light.resizeWorld();
+
+		ground.scale.set(scale);
+    	ground.resizeWorld();
 
 		this.physics.startSystem(Phaser.Physics.ARCADE)
 
@@ -45,6 +56,8 @@ class Main extends Phaser.State {
 		path.displayGrid()
 
 		sprites = this.add.group()
+		
+		sprites.scale.set(scale);
 
 		enemy = new Entity(game, cellSize * 3.5, cellSize * 4.5, 'dude', 180, this.enemyCallback)
 		sprites.addChild(enemy)
@@ -82,6 +95,9 @@ class Main extends Phaser.State {
 		player.move('UP')
 		path.computeDistances(player.targetX, player.targetY)
 		this.enemyCallback();
+		
+	
+		game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 	}
 
 	update() {
