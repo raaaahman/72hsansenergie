@@ -75,7 +75,7 @@ class Main extends Phaser.State {
 		torch.bringToTop()
 		torch.anchor = {x: 0.5, y: 0.5}
 
-    player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude')
+    player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude', 150, this.playerCallBack)
 		player.anchor = {x: 0.5, y: 0.33}
 		sprites.addChild(player)
 		player.bringToTop()
@@ -176,6 +176,10 @@ class Main extends Phaser.State {
 		{
 			 setTimeout(enemyCallback, 250 + Math.random()*500);
 		}
+	}
+
+	playerCallback() {
+
 	}
 
 }
