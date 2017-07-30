@@ -7,12 +7,18 @@ class Entity extends Phaser.Sprite {
 		this.dir 			= 'NONE'
 		this.posX			= startX / cellSize
 		this.posY			= startY / cellSize
-		this.isLit		= false	//
-		this.tileType	= 0			//These two values would be quickly changed
 		this.targetX 	= Math.round(this.posX)
 		this.targetY 	= Math.round(this.posY)
+		this.lastX		= this.targetX
+		this.lastY		= this.targetY
+		this.isLit		= false	//
+		this.tileType	= 0			//These two values would be quickly changed
+
 
 		this.speed 		= speed
+
+		//Add an event for entering a tile
+		this.events.onEnterTile = new Phaser.Signal()
 
 		//Tie the entity to the stage so it gets rendered
 		game.state.getCurrentState().stage.addChild(this)
@@ -33,6 +39,13 @@ class Entity extends Phaser.Sprite {
 
 			//console.log(map.getTile(cellX, cellY, 'foreground', true).index)
 			//console.log(this.isLit)
+
+			if (cellX !== this.lastX || cellY !== this.lastY) {
+				this.events.onEnterTile.dispatch(this.tileType)
+
+				this.lastX = cellX
+				this.lastY = cellY
+			}
 
 
 			if( ( (this.posX - this.targetX) * DIR[this.dir].x > 0) || ( (this.posY - this.targetY) * DIR[this.dir].y > 0) )
