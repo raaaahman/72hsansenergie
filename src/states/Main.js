@@ -41,9 +41,9 @@ class Main extends Phaser.State {
 
 		mapLayer = map.createLayer('mazeLayer')
 
-		mapLayer.resizeWorld()
-
 		mapLayer.scale.set(scale)
+
+		mapLayer.resizeWorld()
 
 		this.physics.startSystem(Phaser.Physics.ARCADE)
 
@@ -69,7 +69,8 @@ class Main extends Phaser.State {
 		//Add torch
 		torch = this.add.sprite(cellSize * 1.5, cellSize * 1.5, 'torch')
 		torch.animations.add('full', [2])
-		torch.animations.play('full')
+		torch.animations.add('off', [0])
+		torch.animations.add('low', [1])
 		sprites.addChild(torch)
 		torch.bringToTop()
 		torch.anchor = {x: 0.5, y: 0.5}
@@ -126,10 +127,30 @@ class Main extends Phaser.State {
 		var mouse = game.input.mousePointer
 		var viewAngle = Math.atan2(mouse.worldY - player.body.y, mouse.worldX - player.body.x)
 		player.rotation = viewAngle
-		torch.rotation = viewAngle
 
-		if (mouse.isDown)
-			console.log("action!")
+
+		if (mouse.isDown) {
+			torch.animations.play('full')
+			torch.rotation = viewAngle
+
+			var monsterAngle = Math.atan2(enemy.y - player.y, enemy.x - player.x)
+
+			var dx = enemy.x - player.x
+			var dy = enemy.y - player.y
+			var monsterDistance2 = dx*dx + dy*dy
+
+			var scopeThreshold2 = cellSize*cellSize*4
+			var angleThreshold = Math.PI * 0.1
+
+			if(monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold)
+			{
+				console.log("Aie, ça fait mal!!!!");
+			}
+
+		}
+			else
+				torch.animations.play('off')
+
 	}
 
 	/*render () {

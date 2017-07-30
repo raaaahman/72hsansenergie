@@ -156,7 +156,7 @@ class PathFinder {
 
 		this.LastBestDist = dist;
 
-		if(dist < 2)
+		if(dist < 1)
 			return 4;
 
 		return bestDir;
