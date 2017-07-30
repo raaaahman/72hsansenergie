@@ -1,5 +1,8 @@
 var map, ground, walls, light, sprites, player, enemy, torch, path, cursors, actionButton
 
+var currentLevel = 1
+const LEVEL_MAX = 5
+
 const DIR = {
 	NONE: {x: 0, y: 0},
 	LEFT: {x: -1, y: 0},
