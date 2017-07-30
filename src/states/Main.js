@@ -41,9 +41,18 @@ class Main extends Phaser.State {
 
 	update() {
 
-		player.getPos()
+		player.checkPos()
 
-		player.move()
+
+		if (cursors.left.isDown)
+			player.move('LEFT')
+		else if (cursors.right.isDown)
+			player.move('RIGHT')
+		else if (cursors.up.isDown)
+			player.move('UP')
+		else if (cursors.down.isDown)
+			player.move('DOWN')
+
 
 		if (actionButton.isDown)
 			console.log("action!")

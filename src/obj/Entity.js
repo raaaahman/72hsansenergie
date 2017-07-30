@@ -5,8 +5,8 @@ class Entity extends Phaser.Sprite {
 
 		this.locked 	= false
 		this.dir 			= 'NONE'
-		this.posX		= startX / cellSize
-		this.posY		= startY / cellSize
+		this.posX			= startX / cellSize
+		this.posY			= startY / cellSize
 		this.isLit		= false	//
 		this.tileType	= 0			//These two values would be quickly changed
 		this.targetX 	= Math.round(this.posX)
@@ -18,7 +18,8 @@ class Entity extends Phaser.Sprite {
 		game.state.getCurrentState().stage.addChild(this)
 	}
 
-	getPos () {
+	//Update the entity's coordinates and stats depending on its position
+	checkPos () {
 		this.posX = this.body.x / cellSize
 		this.posY = this.body.y / cellSize
 		var cellX = Math.round(this.posX)
@@ -28,9 +29,6 @@ class Entity extends Phaser.Sprite {
 
 		map.getTile(cellX, cellY, 'foreground', true).index ? this.isLit = true : this.isLit = false
 
-	}
-
-	move() {
 		if(this.locked)
 		{
 
@@ -46,44 +44,31 @@ class Entity extends Phaser.Sprite {
 
 		}
 
+	}
+
+	move(dir) {
+
+
 		if(!this.locked)
 		{
-			this.dir = 'NONE'
 
-			if (cursors.left.isDown)
-				this.dir = 'LEFT'
-			else if (cursors.right.isDown)
-				this.dir = 'RIGHT'
-			else if (cursors.up.isDown)
-				this.dir = 'UP'
-			else if (cursors.down.isDown)
-				this.dir = 'DOWN'
+			var newTargetX = this.targetX + DIR[dir].x
+			var newTargetY = this.targetY + DIR[dir].y
 
-			//console.log(this.dir)
-
-			if(this.dir !== 'NONE')
-			{
-
-				var newTargetX = this.targetX + DIR[this.dir].x
-				var newTargetY = this.targetY + DIR[this.dir].y
-
-				//console.log(newTargetX, newTargetY)
+			//console.log(newTargetX, newTargetY)
 
 
-				if (map.getTile(newTargetX, newTargetY, 'walls', true).index !== 8) {
-					this.targetX = newTargetX
-					this.targetY = newTargetY
+			if (map.getTile(newTargetX, newTargetY, 'walls', true).index !== 8) {
+				this.targetX = newTargetX
+				this.targetY = newTargetY
 
-					this.body.velocity.x = DIR[this.dir].x * this.speed
-					this.body.velocity.y = DIR[this.dir].y * this.speed
+				this.dir 							= dir
+				this.body.velocity.x 	= DIR[dir].x * this.speed
+				this.body.velocity.y 	= DIR[dir].y * this.speed
 
-					this.locked = true
-				}
+				this.locked = true
 			}
-			else
-			{
-				// console.log("Waiting for input")
-			}
+
 		}
 	}
 }
