@@ -28,12 +28,12 @@ class PathFinder {
 		{
 			for(var i = 0; i < this.mazeWidth; i++)
 			{
-					var id = mazeArray.getTile(i,j,'walls',true).index;
+					var id = mazeArray.getTile(i,j,'mazeLayer',true).index;
 					var pos = (1 + i) + (this.mazeWidth + 2) * (j + 1);
 
 					this.grid[pos] = this.emptyCell;
 
-					if(id == 8)
+					if(id <= 26)
 						this.grid[pos] = this.wall;
 
 					if(this.grid[pos] == this.tp)
@@ -153,9 +153,9 @@ class PathFinder {
 				bestDir = i;
 			}
 		}
-		
+
 		this.LastBestDist = dist;
-		
+
 		if(dist < 2)
 			return 4;
 

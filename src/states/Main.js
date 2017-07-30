@@ -1,4 +1,5 @@
-var map, ground, walls, light, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
+
+var map, mapLayer, ground, walls, light, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -19,9 +20,10 @@ const dirNum = [
 	'NONE'
 ]
 
-var scale = 0
+var scale = 1
 
-var cellSize = 32 * scale
+var cellSize = 377 * scale
+
 
 
 class Main extends Phaser.State {
@@ -29,26 +31,19 @@ class Main extends Phaser.State {
 	create () {
 		this.stage.backgroundColor = '#220022'
 
+		//Select the level
+		var levelName = 'level' + currentLevel
+
 		//Creating the map and the layers
-    map = this.add.tilemap('mazeMap')
+    map = this.add.tilemap(levelName)
 
     map.addTilesetImage('mazeTiles', 'tiles')
 
-    ground = map.createLayer('background')
+		mapLayer = map.createLayer('mazeLayer')
 
-		walls = map.createLayer('walls')
+		mapLayer.resizeWorld()
 
-		light = map.createLayer('foreground')
-		
-		
-		walls.scale.set(scale);
-    	walls.resizeWorld();
-    	
-    	light.scale.set(scale);
-    	light.resizeWorld();
-
-		ground.scale.set(scale);
-    	ground.resizeWorld();
+		mapLayer.scale.set(scale)
 
 		this.physics.startSystem(Phaser.Physics.ARCADE)
 
@@ -59,10 +54,10 @@ class Main extends Phaser.State {
 		path.displayGrid()
 
 		sprites = this.add.group()
-		
+
 		sprites.scale.set(scale);
 
-		enemy = new Entity(game, cellSize * 3.5, cellSize * 4.5, 'dude', 180, this.enemyCallback)
+		enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
 		sprites.addChild(enemy)
 		enemy.anchor = {x: 0.5, y: 0.33}
 		this.physics.enable(enemy, Phaser.Physics.ARCADE)
@@ -72,12 +67,14 @@ class Main extends Phaser.State {
 
 
 		//Add torch
-		torch = this.add.sprite(cellSize * 3.5, cellSize * 2.5, 'torchHigh')
+		torch = this.add.sprite(cellSize * 1.5, cellSize * 1.5, 'torch')
+		torch.animations.add('full', [2])
+		torch.animations.play('full')
 		sprites.addChild(torch)
 		torch.bringToTop()
 		torch.anchor = {x: 0.5, y: 0.5}
 
-    player = new Entity(game, cellSize * 3.5, cellSize * 2.5, 'dude')
+    player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude')
 		player.anchor = {x: 0.5, y: 0.33}
 		sprites.addChild(player)
 		player.bringToTop()
@@ -98,8 +95,8 @@ class Main extends Phaser.State {
 		player.move('UP')
 		path.computeDistances(player.targetX, player.targetY)
 		this.enemyCallback();
-		
-	
+
+
 		game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 	}
 
@@ -144,11 +141,11 @@ class Main extends Phaser.State {
 	}
 
 	enemyCallback () {
-		
+
 		if(Math.random() < 0.7)
 			path.computeDistances(player.targetX, player.targetY)
 		var dir = path.bestDir(enemy.targetX, enemy.targetY)
-		
+
 		if(dir < 4)
 		{
 			console.log('enemy move ',dirNum[dir]);
