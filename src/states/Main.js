@@ -1,4 +1,4 @@
-var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, pauseButton, enemyCallback, runaway
+var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, pauseButton, enemyCallback, runaway, difficulty = 1.2
 
 var pauseMenu = {
 	x: 400,
@@ -66,7 +66,7 @@ class Main extends Phaser.State {
 
 				switch (mapLayer.layer.data[j][i].index) {
 					case 28:
-						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 180, this.enemyCallback)
+						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150 * difficulty, this.enemyCallback)
 						map.putTile(27, i, j, mapLayer)
 						break
 					case 29:
@@ -176,6 +176,8 @@ class Main extends Phaser.State {
 
 	update() {
 
+		this.physics.arcade.overlap(player, enemy, this.resetGame)
+
 		player.checkPos()
 		enemy.checkPos()
 		torch.x = player.x
@@ -202,7 +204,7 @@ class Main extends Phaser.State {
 		player.rotation = viewAngle
 
 
-		if (mouse.isDown) {
+		if (mouse.isDown && player.alive) {
 			torch.animations.play('full')
 			torch.rotation = viewAngle
 
@@ -335,10 +337,20 @@ class Main extends Phaser.State {
 
 				currentLevel++
 
-				game.time.events.add(Phaser.Timer.SECOND * 1.5, game.state.start, game.state, 'Main')
+				game.time.events.add(1500, game.state.start, game.state, 'Main')
 			}
 
 		}
+	}
+
+	resetGame() {
+		player.visible = false
+		player.alive = false
+
+		runaway = 3
+
+		currentLevel = 1
+		game.time.events.add(750, game.state.start, game.state, 'Main')
 	}
 	/*
 	Disabled
