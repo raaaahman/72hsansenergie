@@ -471,7 +471,7 @@ class Main extends Phaser.State {
             torch.visible = false
 						player.alive = false
 
-            this.runaway = 20
+	          runaway = 20
 
             currentLevel++
 
@@ -484,7 +484,8 @@ class Main extends Phaser.State {
 
 					torch.visible = false
 					player.alive = false
-					this.runaway = 20
+
+					runaway = 20
 
 
 					game.time.events.add(1500, game.state.start, game.state, 'Main')
