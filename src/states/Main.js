@@ -1,7 +1,5 @@
 
 var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
-var runaway
-
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -105,7 +103,6 @@ class Main extends Phaser.State {
 		enemy.animations.add('right', [5, 6, 7, 8], 10, true)
 
 		enemyCallback = this.enemyCallback
-		this.runaway = 0
 
 		//TORCH
 		torch = this.add.sprite(cellSize * 1.5, cellSize * 1.5, 'torch')
@@ -204,35 +201,6 @@ class Main extends Phaser.State {
 		game.debug.body(player)
 	}*/
 
-	//Function called when the enemy use a tp:
-	enemyEntersTp(x,y){
-
-		//TODO: hide the monster!
-
-		console.log("Enemy enters in the TP!");
-
-		//Move the monster to the given coordinates:
-		enemy.targetX = x
-		enemy.targetY = y
-
-		enemy.body.x = x * cellSize
-		enemy.body.y = y * cellSize
-
-		//Plan the exit of the Tp (a few seconds later):
-		setTimeout(enemyQuitsTp, 2000 + Math.random()*2000);
-	}
-
-
-	//Function called when the enemy get out of a tp:
-	enemyQuitsTp(){
-
-		//TODO: display the monster!
-
-		console.log("Enemy quits the TP!");
-
-		//Resume the monster's behavior:
-		enemyCallback();
-	}
 
 	enemyCallback () {
 
@@ -293,17 +261,6 @@ class Main extends Phaser.State {
 			this.state.start('Main')
 		}
 	}
-
-	/*Tiles from 1 to 26: walls
-	*	27 : dark floor
-	* 28 : monster spawn
-	* 29 : player spawn
-	* 30 & 31 : player goals
-	* 32 : it's a trap!
-	* 33 : vent
-	* 34 : blinking light
-	* 35 : stable light
-	*/
 
 }
 
