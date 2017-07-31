@@ -279,7 +279,8 @@ class Main extends Phaser.State {
       if (mouse.isDown && player.alive && needle.angle > -60) {
       	
       	//Update HUD:
-      	needle.body.angularVelocity = -5;
+      	if((player.tileType != 35) && (player.tileType != 34))
+      		needle.body.angularVelocity = -5;
       	
           if (!LampSound.isPlaying && lampIsPlaying == 0)
             LampSound.play();
@@ -448,6 +449,14 @@ class Main extends Phaser.State {
 
 				game.time.events.add(1500, game.state.start, game.state, 'Main')
 			}
+			
+			
+		//Charge torch if on light tile:
+		if( (player.tileType  == 35 || player.tileType  == 34) && needle.angle <= 60)
+	    {
+	    	console.log("UPDATE!!");
+	        needle.body.angularVelocity = 10;
+	    }
 
     }
 
