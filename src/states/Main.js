@@ -10,8 +10,9 @@ var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionB
 }*/
 
 var runaway
-var AlienInSound, AlienOutSound, AlienMoveSound, AlienNearSound, AlienNear2Sound, AlienNoiseSound;
-var PlayerMoveSound, LampSound, lampIsPlaying;
+var AlienInSound, AlienOutSound, AlienMoveSound, AlienNearSound, AlienNear2Sound
+var AlienNoise1Sound
+var PlayerMoveSound, LampSound, lampIsPlaying
 var ElectricSound
 var HearthSound
 var ObjectifLightSound
@@ -21,11 +22,11 @@ var currentLevel = 1
 const LEVEL_MAX = 5
 
 const DIR = {
-    NONE: {x: 0, y: 0},
-    LEFT: {x: -1, y: 0},
-    RIGHT: {x: 1, y: 0},
-    DOWN: {x: 0, y: 1},
-    UP: {x: 0, y: -1}
+    NONE: { x: 0, y: 0 },
+    LEFT: { x: -1, y: 0 },
+    RIGHT: { x: 1, y: 0 },
+    DOWN: { x: 0, y: 1 },
+    UP: { x: 0, y: -1 }
 }
 
 const dirNum = [
@@ -44,7 +45,7 @@ var cellSize = 377 * scale
 
 class Main extends Phaser.State {
 
-    create () {
+    create() {
         this.stage.backgroundColor = '#220022'
 
         //Select the level
@@ -108,7 +109,6 @@ class Main extends Phaser.State {
 
 		path = new PathFinder(map)
 
-
 		runaway = 0
 
 		path.displayGrid()
@@ -117,7 +117,6 @@ class Main extends Phaser.State {
 		sprites.addChild(lights)
 
 		sprites.scale.set(scale);
-
 
     //ENEMY
     //enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
@@ -154,22 +153,17 @@ class Main extends Phaser.State {
     cursors = this.input.keyboard.createCursorKeys()
     actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
 
-    //Examples of binding events to enter tile function
-
-    //player.setTrigger(2, this.enteredCorridor, this)
 
     player.move('UP')
     path.computeDistances(player.targetX, player.targetY)
     this.enemyCallback();
 
 
-    game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
-
     // Sound Initialisation
     AlienInSound = game.add.audio('AlienIn');
     AlienOutSound = game.add.audio('AlienOut');
     AlienMoveSound = game.add.audio('AlienMove');
-    AlienNoiseSound = game.add.audio('AlienNoise');
+    AlienNoise1Sound = game.add.audio('AlienNoise1');
     AlienNearSound = game.add.audio('AlienNear');
     AlienNear2Sound = game.add.audio('AlienNear2');
     PlayerMoveSound = game.add.audio('PlayerMove');
@@ -181,11 +175,16 @@ class Main extends Phaser.State {
     /* HearthSound.play();
      HearthSound.loop = true;
     */
-    PlayerMoveSound.loop = true;
-    PlayerMoveSound.play();
-    PlayerMoveSound.pause();
+
+    if (PlayerMoveSound != undefined)
+    {
+        PlayerMoveSound.loop = true;
+        PlayerMoveSound.play();
+        PlayerMoveSound.pause();
+    }
     lampIsPlaying = 0;
 
+    game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 	}
 
     update() {
@@ -198,41 +197,47 @@ class Main extends Phaser.State {
         enemy.checkPos()
         torch.x = player.x
         torch.y = player.y
-
         //random electric sound
         if (Math.random() < 0.001) {
-            if (!ElectricSound.isPlaying)
+            if (ElectricSound != undefined && !ElectricSound.isPlaying)
                 ElectricSound.play();
         }
 
         if (cursors.left.isDown) {
             player.move('LEFT')
-            PlayerMoveSound.resume();
+            if (PlayerMoveSound != undefined)
+                PlayerMoveSound.resume();
         }
         else if (cursors.right.isDown) {
             player.move('RIGHT')
-            PlayerMoveSound.resume();
+            if (PlayerMoveSound != undefined)
+                PlayerMoveSound.resume();
         }
         else if (cursors.up.isDown) {
             player.move('UP')
-            PlayerMoveSound.resume();
+            if (PlayerMoveSound != undefined)
+                PlayerMoveSound.resume();
         }
         else if (cursors.down.isDown) {
             player.move('DOWN')
-            PlayerMoveSound.resume();
+            if (PlayerMoveSound != undefined)
+                PlayerMoveSound.resume();
         }
         else {
-            PlayerMoveSound.pause();
+            if (PlayerMoveSound != undefined)
+                PlayerMoveSound.pause();
         }
 
 
         //Alien Sound
         if (monsterDistance2 < 100000) {
-            if (!AlienMoveSound.isPlaying)
+            if (AlienMoveSound != undefined && !AlienMoveSound.isPlaying)
                 AlienMoveSound.play();
         }
-        else
-            AlienMoveSound.pause();
+        else {
+            if (AlienMoveSound != undefined)
+                AlienMoveSound.pause();
+        }
 
         //console.log(game.input.mousePointer.worldX, game.input.mousePointer.worldY)
         var mouse = game.input.mousePointer
@@ -240,32 +245,34 @@ class Main extends Phaser.State {
         player.rotation = viewAngle
 
 
-        if (mouse.isDown && player.alive) {
-            if (!LampSound.isPlaying && lampIsPlaying == 0)
-              LampSound.play();
+      if (mouse.isDown && player.alive) {
+          if (!LampSound.isPlaying && lampIsPlaying == 0)
+            LampSound.play();
+
             torch.animations.play('full')
             torch.rotation = viewAngle
 
             var monsterAngle = Math.atan2(enemy.y - player.y, enemy.x - player.x)
 
-            var scopeThreshold2 = cellSize*cellSize*4
+            var scopeThreshold2 = cellSize * cellSize * 4
             var angleThreshold = Math.PI * 0.1
 
             //If monster is in the light beam:
-            if(monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold)
-            {
+            if (monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold) {
                 //Monster is confused and run away (10 steps):
-                if (!AlienNear2Sound.isPlaying)
+
+            if (AlienNear2Sound != undefined && !AlienNear2Sound.isPlaying())
                     AlienNear2Sound.play();
-                if(runaway < 3)
-                    runaway = 10
-                //console.log("RUNAWAY!!")
+
+            if (runaway < 3)
+                runaway = 10
+            //console.log("RUNAWAY!!")
             }
             lampIsPlaying = 1;
         }
-        else
-        {
-            LampSound.pause();
+        else {
+            if (LampSound != undefined)
+                LampSound.pause();
             lampIsPlaying = 0;
             torch.animations.play('off')
         }
@@ -280,11 +287,13 @@ class Main extends Phaser.State {
     }
 
     //Function called when the enemy use a tp:
-    enemyEntersTp(x,y){
+    enemyEntersTp(x, y) {
+
 
         //TODO: hide the monster!
 
-        console.log("Enemy enters in the TP!");
+        if (AlienInSound != undefined)
+            AlienInSound.play();
 
         //Move the monster to the given coordinates:
         enemy.targetX = x
@@ -294,106 +303,106 @@ class Main extends Phaser.State {
         enemy.body.y = y * cellSize
 
         //Plan the exit of the Tp (a few seconds later):
-        setTimeout(enemyQuitsTp, 2000 + Math.random()*2000);
+        setTimeout(enemyQuitsTp, 2000 + Math.random() * 2000);
     }
 
 
     //Function called when the enemy get out of a tp:
-    enemyQuitsTp(){
+    enemyQuitsTp() {
+
 
         //TODO: display the monster!
 
         console.log("Enemy quits the TP!");
-        AlienOutSound.play();
+        if (AlienOutSound != undefined)
+            AlienOutSound.play();
         //Resume the monster's behavior:
         enemyCallback();
     }
 
-    enemyCallback () {
+    enemyCallback() {
 
         //Enemy track the player. With high probability, the monster is able
         //to find the precise location of the player:
-        if(Math.random() < 0.7)
+        if (Math.random() < 0.7)
             path.computeDistances(player.targetX, player.targetY)
 
         var dir = 4 //default dir is 4 (4 means 'NONE').
 
         //If the monster is running away:
 
-        if(runaway > 0)
-        {
+        if (runaway > 0) {
             //Monster tries to avoid player:
             dir = path.worstDir(enemy.targetX, enemy.targetY)
             //console.log("Monster is Running Away! RunAwayCounter=",runaway)
             runaway--
             //console.log("Monster is Running Away! RunAwayCounter=",runaway)
         }
-        else
-        {
+        else {
             //Monster try to catch player:
             dir = path.bestDir(enemy.targetX, enemy.targetY)
             //console.log("Monster is Tracking the Player! RunAwayCounter=",runaway);
         }
 
-        if(dir < 4)
-        {
+        if (dir < 4) {
 
-        if(path.useTp)
-        {
-            console.log("Monster use TP!");
-            //The monster tries to use a TP so don't move immediately:
-            var x = path.coordX(path.tpPos)
-            var y = path.coordY(path.tpPos)
-            //Alien tp sound
-            if (!AlienInSound.isPlaying)
-                AlienInSound.play();
-            enemyEntersTp(x, y)
-        }
-        else
-        {
-            //console.log("Monster Regular move!");
-            //Regular move:
-            //console.log('enemy move ',dirNum[dir]);
 
-            enemy.move(dirNum[dir])
-            //Alien random sound
-            if (Math.random() < 0.3) {
-                if (!AlienNoiseSound.isPlaying)
-                    AlienNoiseSound.play();
-            }
-            else if (Math.random() > 0.95) {
-                if (Math.random() > 0.98) {
-                    if (!AlienNearSound.isPlaying)
-                        AlienNearSound.play();
-                }
-            }
-        }
-    }
-		else
-		{
-			//console.log("Monster has lost the player! Waiting...");
-			//No moves done, wait a little, then try again!
-			game.time.events.add(250 + Math.random()*500, enemyCallback, this);
-		}
-}
+          if (path.useTp) {
+              console.log("Monster use TP!");
+              //The monster tries to use a TP so don't move immediately:
+              var x = path.coordX(path.tpPos)
+              var y = path.coordY(path.tpPos)
+              //Alien tp sound
+              if (AlienInSound != undefined && !AlienInSound.isPlaying)
+                  AlienInSound.play();
+              enemyEntersTp(x, y)
+          }
+          else {
+              //console.log("Monster Regular move!");
+              //Regular move:
+              //console.log('enemy move ',dirNum[dir]);
 
-playerCallback() {
+              enemy.move(dirNum[dir])
+              //Alien random sound
+              if (Math.random() < 0.3) {
+                  if (AlienNoise1Sound != undefined && !AlienNoise1Sound.isPlaying)
+                      AlienNoise1Sound.play();
+              }
+              else if (Math.random() > 0.95) {
+                  if (Math.random() > 0.98) {
+                      if (AlienNearSound != undefined && !AlienNearSound.isPlaying)
+                          AlienNearSound.play();
+                  }
+              }
+          }
+      }
+      else {
+          //console.log("Monster has lost the player! Waiting...");
+          //No moves done, wait a little, then try again!
+          game.time.events.add(250 + Math.random() * 500, enemyCallback, this);
+      }
+  }
 
-    //Load a new level
-    if (player.tileType == 30) {
-        if (currentLevel < LEVEL_MAX) {
+  playerCallback() {
 
-            torch.visible = false
 
-            this.runaway = 20
+	    //Load a new level
+	    if (player.tileType == 30) {
+	        if (currentLevel < LEVEL_MAX) {
 
-            currentLevel++
+	            torch.visible = false
+
+	            this.runaway = 20
+
+	            currentLevel++
+
+	            game.time.events.add(Phaser.Timer.SECOND * 1.5, game.state.start, game.state, 'Main')
+	        }
 
 				game.time.events.add(1500, game.state.start, game.state, 'Main')
 			}
 
     }
-}
 
 	resetGame() {
 		player.visible = false
