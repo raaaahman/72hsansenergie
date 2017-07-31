@@ -169,7 +169,7 @@ class Main extends Phaser.State {
     AlienInSound = game.add.audio('AlienIn');
     AlienOutSound = game.add.audio('AlienOut');
     AlienMoveSound = game.add.audio('AlienMove');
-    AlienNoiseSound = this.add.audio('AlienNoise');
+    AlienNoiseSound = game.add.audio('AlienNoise');
     AlienNearSound = game.add.audio('AlienNear');
     AlienNear2Sound = game.add.audio('AlienNear2');
     PlayerMoveSound = game.add.audio('PlayerMove');
@@ -255,7 +255,7 @@ class Main extends Phaser.State {
             if(monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold)
             {
                 //Monster is confused and run away (10 steps):
-                if (!AlienNear2Sound.isPlaying())
+                if (!AlienNear2Sound.isPlaying)
                     AlienNear2Sound.play();
                 if(runaway < 3)
                     runaway = 10
@@ -271,8 +271,8 @@ class Main extends Phaser.State {
         }
     }
 
-    /*render () {
-		game.debug.body(player)
+  /*render () {
+		game.debug.soundInfo(LampSound, 40, 40)
 	}*/
 
     enteredCorridor() {
