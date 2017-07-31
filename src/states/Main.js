@@ -63,7 +63,7 @@ class Main extends Phaser.State {
 						map.putTile(27, i, j, mapLayer)
 						break
 					case 29:
-						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallBack)
+						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallback)
 						map.putTile(35, i, j, mapLayer)
 						break
 					case 32:
@@ -146,6 +146,7 @@ class Main extends Phaser.State {
 
 
 		game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+
 	}
 
 	update() {
@@ -254,7 +255,7 @@ class Main extends Phaser.State {
 		{
 			console.log("Monster has lost the player! Waiting...");
 			//No moves done, wait a little, then try again!
-			setTimeout(enemyCallback, 250 + Math.random()*500);
+			game.time.events.add(250 + Math.random()*500, enemyCallback, this);
 		}
 	}
 
@@ -269,12 +270,8 @@ class Main extends Phaser.State {
 				this.runaway = 20
 
 				currentLevel++
-				setTimeout(
-					function () {
-						game.state.start('Main')
-					},
-					1500
-				)
+
+				game.time.events.add(Phaser.Timer.SECOND * 1.5, game.state.start, game.state, 'Main')
 			}
 
 		}
