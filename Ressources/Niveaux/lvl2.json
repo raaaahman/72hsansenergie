@@ -19,7 +19,7 @@
  "tilesets":[
 	 {
 	 "firstgid":1,
-	 "image":"../Graphisme/tileSet/TileSet.png",
+	 "image":"../Graphisme/TileSetCut.png",
 	 "imageheight":377,
 	 "imagewidth":13195,
 	 "margin":0,
