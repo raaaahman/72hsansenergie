@@ -1,5 +1,5 @@
-
 var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
+var runaway
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -91,6 +91,9 @@ class Main extends Phaser.State {
 
 		path = new PathFinder(map)
 
+
+		runaway = 0
+		
 		path.displayGrid()
 
 		sprites = this.add.group()
@@ -193,19 +196,54 @@ class Main extends Phaser.State {
 			if(monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold)
 			{
 				//Monster is confused and run away (10 steps):
-				this.runaway = 10;
+
+				if(runaway < 3)
+					runaway = 10
+				//console.log("RUNAWAY!!")
 			}
 
 		}
 			else
 				torch.animations.play('off')
-
 	}
 
 	/*render () {
 		game.debug.body(player)
 	}*/
 
+	enteredCorridor() {
+		console.log("It's a corridor")
+	}
+	
+	//Function called when the enemy use a tp:
+	enemyEntersTp(x,y){
+		
+		//TODO: hide the monster!
+		
+		console.log("Enemy enters in the TP!");
+		
+		//Move the monster to the given coordinates:
+		enemy.targetX = x
+		enemy.targetY = y
+		
+		enemy.body.x = x * cellSize
+		enemy.body.y = y * cellSize
+		
+		//Plan the exit of the Tp (a few seconds later):
+		setTimeout(enemyQuitsTp, 2000 + Math.random()*2000);
+	}
+	
+	
+	//Function called when the enemy get out of a tp:
+	enemyQuitsTp(){
+		
+		//TODO: display the monster!
+		
+		console.log("Enemy quits the TP!");
+		
+		//Resume the monster's behavior:
+		enemyCallback();
+	}
 
 	enemyCallback () {
 
@@ -214,21 +252,24 @@ class Main extends Phaser.State {
 		if(Math.random() < 0.7)
 			path.computeDistances(player.targetX, player.targetY)
 
+		
 		var dir = 4 //default dir is 4 (4 means 'NONE').
-
+		
 		//If the monster is running away:
-		if(this.runaway > 0)
+
+		if(runaway > 0)
 		{
 			//Monster tries to avoid player:
 			dir = path.worstDir(enemy.targetX, enemy.targetY)
-			this.runaway--
-			console.log("Monster is Running Away! RunAwayCounter=",this.runaway);
+			//console.log("Monster is Running Away! RunAwayCounter=",runaway)
+			runaway--
+			//console.log("Monster is Running Away! RunAwayCounter=",runaway)
 		}
 		else
 		{
 			//Monster try to catch player:
 			dir = path.bestDir(enemy.targetX, enemy.targetY)
-			console.log("Monster is Tracking the Player! RunAwayCounter=",this.runaway);
+			//console.log("Monster is Tracking the Player! RunAwayCounter=",runaway);
 		}
 
 		if(dir < 4)
@@ -244,15 +285,16 @@ class Main extends Phaser.State {
 			}
 			else
 			{
-				console.log("Monster Regular move!");
+				//console.log("Monster Regular move!");
 				//Regular move:
-				console.log('enemy move ',dirNum[dir]);
+				//console.log('enemy move ',dirNum[dir]);
+
 				enemy.move(dirNum[dir])
 			}
 		}
 		else
 		{
-			console.log("Monster has lost the player! Waiting...");
+			//console.log("Monster has lost the player! Waiting...");
 			//No moves done, wait a little, then try again!
 			setTimeout(enemyCallback, 250 + Math.random()*500);
 		}
