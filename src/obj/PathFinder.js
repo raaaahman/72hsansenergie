@@ -33,7 +33,7 @@ class PathFinder {
 
 					this.grid[pos] = this.emptyCell;
 
-					if(id <= 26)
+					if(id <= 26 || id == 34 || id == 35)
 						this.grid[pos] = this.wall;
 
 					if(this.grid[pos] == this.tp)
