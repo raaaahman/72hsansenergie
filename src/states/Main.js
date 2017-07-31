@@ -1,10 +1,21 @@
-var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
+
+var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback, difficulty = 1.2
+
+/*var pauseMenu = {
+	x: 400,
+	y: 300,
+	width: 200,
+	height: 120,
+	unpauseButton: ''
+}*/
+
 var runaway
 var AlienInSound, AlienOutSound, AlienMoveSound, AlienNearSound, AlienNear2Sound, AlienNoiseSound;
 var PlayerMoveSound, LampSound, lampIsPlaying;
 var ElectricSound
 var HearthSound
 var ObjectifLightSound
+
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -40,140 +51,142 @@ class Main extends Phaser.State {
         var levelName = 'level' + currentLevel
 
         /*Tiles from 1 to 26: walls
-		*	27 : dark floor
-		* 28 : monster spawn
-		* 29 : player spawn
-		* 30 & 31 : player goals
-		* 32 : it's a trap!
-		* 33 : vent
-		* 34 : blinking light
-		* 35 : stable light
-		*/
-
-        //MAP
-        map = this.add.tilemap(levelName)
-
-        map.addTilesetImage('mazeTiles', 'tiles')
-
-        mapLayer = map.createLayer('mazeLayer')
-
-        lights = map.createBlankLayer('lights', 50, 50, cellSize, cellSize)
-
-        for (var j = 0; j < mapLayer.layer.height; j++) {
-            for (var i = 0; i < mapLayer.layer.width; i++) {
-
-                switch (mapLayer.layer.data[j][i].index) {
-                    case 28:
-                        enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 180, this.enemyCallback)
-                        map.putTile(27, i, j, mapLayer)
-                        break
-                    case 29:
-                        player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallback)
-                        map.putTile(35, i, j, mapLayer)
-                        break
-                    case 32:
-                        //Temporary, for we don't have traps now
-                        map.putTile(27, i, j, mapLayer)
-                        break
-                    case 34: //Temporary, no differencies between lights
-                    case 35:
-                        map.putTile(27, i, j, lights)
-                        break
-                    default:
-                        break
-                }
-            }
-        }
-
-        mapLayer.scale.set(scale)
-        lights.scale.set(scale)
-
-        mapLayer.resizeWorld()
+				*	27 : dark floor
+				* 28 : monster spawn
+				* 29 : player spawn
+				* 30 & 31 : player goals
+				* 32 : it's a trap!
+				* 33 : vent
+				* 34 : blinking light
+				* 35 : stable light
+				*/
 
 
+		//MAP
+    map = this.add.tilemap(levelName)
 
-        this.physics.startSystem(Phaser.Physics.ARCADE)
+    map.addTilesetImage('mazeTiles', 'tiles')
 
-        path = new PathFinder(map)
+		mapLayer = map.createLayer('mazeLayer')
 
+		lights = map.createBlankLayer('lights', 50, 50, cellSize, cellSize)
 
-        runaway = 0
-		
-        path.displayGrid()
+		for (var j = 0; j < mapLayer.layer.height; j++) {
+			for (var i = 0; i < mapLayer.layer.width; i++) {
 
-        sprites = this.add.group()
-        sprites.addChild(lights)
+				switch (mapLayer.layer.data[j][i].index) {
+					case 28:
+						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150 * difficulty, this.enemyCallback)
+						map.putTile(27, i, j, mapLayer)
+						break
+					case 29:
+						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallback)
+						map.putTile(35, i, j, mapLayer)
+						break
+					case 32:
+						//Temporary, for we don't have traps now
+						map.putTile(27, i, j, mapLayer)
+						break
+					case 34: //Temporary, no differencies between lights
+					case 35:
+						map.putTile(27, i, j, lights)
+						break
+					default:
+						break
+				}
+			}
+		}
 
-        sprites.scale.set(scale);
+		mapLayer.scale.set(scale)
+		lights.scale.set(scale)
 
-        //ENEMY
-        //enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
-        sprites.addChild(enemy)
-        enemy.anchor = {x: 0.5, y: 0.33}
-        this.physics.enable(enemy, Phaser.Physics.ARCADE)
-        enemy.animations.add('left', [0, 1, 2, 3], 10, true)
-        enemy.animations.add('turn', [4], 20, true)
-        enemy.animations.add('right', [5, 6, 7, 8], 10, true)
-
-        enemyCallback = this.enemyCallback
-
-        //TORCH
-        torch = this.add.sprite(cellSize * 1.5, cellSize * 1.5, 'torch')
-        torch.animations.add('full', [2])
-        torch.animations.add('off', [0])
-        torch.animations.add('low', [1])
-        sprites.addChild(torch)
-        //torch.moveUp()
-        torch.anchor = {x: 0.5, y: 0.5}
-
-        //Lighted tiles
-        lights.bringToTop()
-
-        //PLAYER
-        //player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude', 150, this.playerCallBack)
-        player.anchor = {x: 0.5, y: 0.33}
-        sprites.addChild(player)
-        player.bringToTop()
-        this.physics.enable(player, Phaser.Physics.ARCADE)
-        player.animations.add('left', [0, 1, 2, 3], 10, true)
-        player.animations.add('turn', [4], 20, true)
-        player.animations.add('right', [5, 6, 7, 8], 10, true)
-        cursors = this.input.keyboard.createCursorKeys()
-        actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
-
-        //Examples of binding events to enter tile function
-
-        //player.setTrigger(2, this.enteredCorridor, this)
-
-        player.move('UP')
-        path.computeDistances(player.targetX, player.targetY)
-        this.enemyCallback();
+		mapLayer.resizeWorld()
 
 
-        game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
-        // Sound Initialisation
-        AlienInSound = game.add.audio('AlienIn');
-        AlienOutSound = game.add.audio('AlienOut');
-        AlienMoveSound = game.add.audio('AlienMove');
-        AlienNoiseSound = game.add.audio('AlienNoise');
-        AlienNearSound = game.add.audio('AlienNear');
-        AlienNear2Sound = game.add.audio('AlienNear2');
-        PlayerMoveSound = game.add.audio('PlayerMove');
-        ElectricSound = game.add.audio('ElectricSound');
-        HearthSound = game.add.audio('HearthSound');
-        ObjectifLightSound = game.add.audio('ObjectifLight');
-        LampSound = game.add.audio('Lamp');
-        //don't know if i'll keep it
-        /* HearthSound.play();
-         HearthSound.loop = true;
-        */
-        PlayerMoveSound.loop = true;
-        PlayerMoveSound.play();
-        PlayerMoveSound.pause();
-        lampIsPlaying = 0;
+		this.physics.startSystem(Phaser.Physics.ARCADE)
 
-    }
+		path = new PathFinder(map)
+
+
+		runaway = 0
+
+		path.displayGrid()
+
+		sprites = this.add.group()
+		sprites.addChild(lights)
+
+		sprites.scale.set(scale);
+
+
+    //ENEMY
+    //enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
+    sprites.addChild(enemy)
+    enemy.anchor = {x: 0.5, y: 0.33}
+    this.physics.enable(enemy, Phaser.Physics.ARCADE)
+    enemy.animations.add('left', [0, 1, 2, 3], 10, true)
+    enemy.animations.add('turn', [4], 20, true)
+    enemy.animations.add('right', [5, 6, 7, 8], 10, true)
+
+    enemyCallback = this.enemyCallback
+
+    //TORCH
+    torch = this.add.sprite(cellSize * 1.5, cellSize * 1.5, 'torch')
+    torch.animations.add('full', [2])
+    torch.animations.add('off', [0])
+    torch.animations.add('low', [1])
+    sprites.addChild(torch)
+    //torch.moveUp()
+    torch.anchor = {x: 0.5, y: 0.5}
+
+    //Lighted tiles
+    lights.bringToTop()
+
+    //PLAYER
+    //player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude', 150, this.playerCallBack)
+    player.anchor = {x: 0.5, y: 0.33}
+    sprites.addChild(player)
+    player.bringToTop()
+    this.physics.enable(player, Phaser.Physics.ARCADE)
+    player.animations.add('left', [0, 1, 2, 3], 10, true)
+    player.animations.add('turn', [4], 20, true)
+    player.animations.add('right', [5, 6, 7, 8], 10, true)
+    cursors = this.input.keyboard.createCursorKeys()
+    actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+
+    //Examples of binding events to enter tile function
+
+    //player.setTrigger(2, this.enteredCorridor, this)
+
+    player.move('UP')
+    path.computeDistances(player.targetX, player.targetY)
+    this.enemyCallback();
+
+
+    game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+
+    // Sound Initialisation
+    AlienInSound = game.add.audio('AlienIn');
+    AlienOutSound = game.add.audio('AlienOut');
+    AlienMoveSound = game.add.audio('AlienMove');
+    AlienNoiseSound = this.add.audio('AlienNoise');
+    AlienNearSound = game.add.audio('AlienNear');
+    AlienNear2Sound = game.add.audio('AlienNear2');
+    PlayerMoveSound = game.add.audio('PlayerMove');
+    ElectricSound = game.add.audio('ElectricSound');
+    HearthSound = game.add.audio('HearthSound');
+    ObjectifLightSound = game.add.audio('ObjectifLight');
+    LampSound = game.add.audio('Lamp');
+    //don't know if i'll keep it
+    /* HearthSound.play();
+     HearthSound.loop = true;
+    */
+    PlayerMoveSound.loop = true;
+    PlayerMoveSound.play();
+    PlayerMoveSound.pause();
+    lampIsPlaying = 0;
+
+	}
 
     update() {
 
@@ -227,7 +240,7 @@ class Main extends Phaser.State {
         player.rotation = viewAngle
 
 
-        if (mouse.isDown) {
+        if (mouse.isDown && player.alive) {
             if (!LampSound.isPlaying && lampIsPlaying == 0)
               LampSound.play();
             torch.animations.play('full')
@@ -265,31 +278,31 @@ class Main extends Phaser.State {
     enteredCorridor() {
         console.log("It's a corridor")
     }
-	
+
     //Function called when the enemy use a tp:
     enemyEntersTp(x,y){
-		
+
         //TODO: hide the monster!
-		
+
         console.log("Enemy enters in the TP!");
-		
+
         //Move the monster to the given coordinates:
         enemy.targetX = x
         enemy.targetY = y
-		
+
         enemy.body.x = x * cellSize
         enemy.body.y = y * cellSize
-		
+
         //Plan the exit of the Tp (a few seconds later):
         setTimeout(enemyQuitsTp, 2000 + Math.random()*2000);
     }
-	
-	
+
+
     //Function called when the enemy get out of a tp:
     enemyQuitsTp(){
-		
+
         //TODO: display the monster!
-		
+
         console.log("Enemy quits the TP!");
         AlienOutSound.play();
         //Resume the monster's behavior:
@@ -303,9 +316,8 @@ class Main extends Phaser.State {
         if(Math.random() < 0.7)
             path.computeDistances(player.targetX, player.targetY)
 
-		
         var dir = 4 //default dir is 4 (4 means 'NONE').
-		
+
         //If the monster is running away:
 
         if(runaway > 0)
@@ -326,38 +338,37 @@ class Main extends Phaser.State {
         if(dir < 4)
         {
 
-            if(path.useTp)
-            {
-                console.log("Monster use TP!");
-                //The monster tries to use a TP so don't move immediately:
-                var x = path.coordX(path.tpPos)
-                var y = path.coordY(path.tpPos)
-                //Alien tp sound
-                if (!AlienInSound.isPlaying)
-                    AlienInSound.play();
-                enemyEntersTp(x, y)
-            }
-            else
-            {
-                //console.log("Monster Regular move!");
-                //Regular move:
-                //console.log('enemy move ',dirNum[dir]);
+        if(path.useTp)
+        {
+            console.log("Monster use TP!");
+            //The monster tries to use a TP so don't move immediately:
+            var x = path.coordX(path.tpPos)
+            var y = path.coordY(path.tpPos)
+            //Alien tp sound
+            if (!AlienInSound.isPlaying)
+                AlienInSound.play();
+            enemyEntersTp(x, y)
+        }
+        else
+        {
+            //console.log("Monster Regular move!");
+            //Regular move:
+            //console.log('enemy move ',dirNum[dir]);
 
-                enemy.move(dirNum[dir])
-                //Alien random sound
-                if (Math.random() < 0.3) {
-                    if (!AlienNoiseSound.isPlaying)
-                        AlienNoiseSound.play();
-                }
-                else if (Math.random() > 0.95) {
-                    if (Math.random() > 0.98) {
-                        if (!AlienNearSound.isPlaying)
-                            AlienNearSound.play();
-                    }
+            enemy.move(dirNum[dir])
+            //Alien random sound
+            if (Math.random() < 0.3) {
+                if (!AlienNoiseSound.isPlaying)
+                    AlienNoiseSound.play();
+            }
+            else if (Math.random() > 0.95) {
+                if (Math.random() > 0.98) {
+                    if (!AlienNearSound.isPlaying)
+                        AlienNearSound.play();
                 }
             }
         }
-
+    }
 		else
 		{
 			//console.log("Monster has lost the player! Waiting...");
@@ -378,12 +389,57 @@ playerCallback() {
 
             currentLevel++
 
-            game.time.events.add(Phaser.Timer.SECOND * 1.5, game.state.start, game.state, 'Main')
-        }
+				game.time.events.add(1500, game.state.start, game.state, 'Main')
+			}
 
     }
 }
 
+	resetGame() {
+		player.visible = false
+		player.alive = false
+
+		runaway = 3
+
+		currentLevel = 1
+		game.time.events.add(750, game.state.start, game.state, 'Main')
+	}
+	/*
+	Disabled
+	handleMouseClick () {
+		console.log("click!")
+		if (game.paused &&
+		game.input.mousePointer.x > pauseMenu.x &&
+		game.input.mousePointer.x < pauseMenu.x + pauseMenu.width &&
+		game.input.mousePointer.y > pauseMenu.y &&
+		game.input.mousePointer.y < pauseMenu.y + pauseMenu.height) {
+			this.togglePause(32)
+		}
+	}
+	*/
+
+	togglePause (control) {
+
+		console.log(control.keyCode)
+		if (control === Phaser.KeyCode.SPACEBAR
+			|| control.keyCode === Phaser.KeyCode.SPACEBAR) {
+			if (game.paused == true) {
+				game.paused = false
+
+				//Erase pause menu
+				pauseMenu.unpauseButton.destroy()
+			}
+			else {
+				game.paused = true
+
+				//Add the Pause menu
+				pauseMenu.unpauseButton = this.add.text(pauseMenu.x, pauseMenu.y, 'Resume', { font: '48px Arial', fill: '#fff'})
+				sprites.add(pauseMenu.unpauseButton)
+				pauseMenu.unpauseButton.bringToTop()
+
+			}
+		}
+		}
 
 }
 
