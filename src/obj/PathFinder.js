@@ -56,6 +56,8 @@ class PathFinder {
 		this.tp = 1;
 		this.teleporters = [];
 		this.activateTp = true;
+		this.useTp = false;
+		this.tpPos = 0;
 		this.grid = new Array(this.mazeSize);
 		this.distances = new Array(this.mazeSize);
 		this.distMax = 1000;
@@ -126,17 +128,32 @@ class PathFinder {
 		}
 	}
 
+	//Convert coordinates from a layer (phaser.io) into a position:
 	pos(x,y)
 	{
 		return (1 + x) + (this.mazeWidth + 2) * (y + 1);
 	}
 
+	//Convert a position into layer coordinates (X,Y):  
+	coordX(pos)
+	{
+		return (pos % (this.mazeWidth + 2)) -1;
+	}
+	
+	coordY(pos)
+	{
+		return Math.floor(pos / (this.mazeWidth + 2)) - 1;
+	}
+
+	//Find direction to follow the player:
 	bestDir(x,y)
 	{
+		this.useTp = false;
 		var dist = this.distMax;
 		var pos = this.pos(x,y);
-		var bestDir = 0;
+		var bestDir = 4;
 
+		//Check directions:
 		for(var i=0; i < 4; i++)
 		{
 			var next = pos + this.dirs[i];
@@ -153,21 +170,44 @@ class PathFinder {
 				bestDir = i;
 			}
 		}
-
+		
+		//Check teleporters:
+		if(this.activateTp && (this.grid[pos] == this.tp))
+		{
+			for(var j=0; j < teleporters.length; j++)
+			{
+				var next = this.teleporters[j];
+				var newDist = this.distances[next];
+				
+				if(newDist < dist)
+				{
+						dist = newDist;
+						bestDir = 5;
+						this.useTp = true;
+						this.tpPos = next;
+				}
+				else if(newDist == dist && Math.random() < 0.5)
+				{
+					dist = newDist;
+					bestDir = 5;
+					this.useTp = true;
+					this.tpPos = next;
+				}
+			}
+		}
+		
+				
 		this.LastBestDist = dist;
-
-		if(dist < 1)
-			return 4;
-
 		return bestDir;
 	}
 
 
+	//Find direction for running away:
 	worstDir(x,y)
 	{
 		var dist = 0;
 		var pos = this.pos(x,y);
-		var bestDir = 0;
+		var bestDir = 4;
 
 		for(var i=0; i < 4; i++)
 		{
@@ -226,27 +266,27 @@ class PathFinder {
 //Tests:
 //Instanciate a pathFinder then compute distances!
 
-function TEST_PathFinder()
-{
+//~ function TEST_PathFinder()
+//~ {
 
-	var maze =
-	[
-	1,2,0,0,0,0,0,0,0,0,
-	2,2,0,0,0,0,0,0,0,0,
-	0,0,2,2,1,2,2,1,0,0,
-	0,0,2,2,2,2,2,2,0,0,
-	0,0,2,2,2,2,2,2,0,0,
-	0,0,0,2,2,2,0,0,0,0,
-	0,0,0,2,2,0,0,0,0,0,
-	0,0,0,0,2,0,0,0,0,0,
-	0,0,0,0,1,0,0,0,2,2,
-	0,0,0,0,0,0,0,0,2,1
-	];
+	//~ var maze =
+	//~ [
+	//~ 1,2,0,0,0,0,0,0,0,0,
+	//~ 2,2,0,0,0,0,0,0,0,0,
+	//~ 0,0,2,2,1,2,2,1,0,0,
+	//~ 0,0,2,2,2,2,2,2,0,0,
+	//~ 0,0,2,2,2,2,2,2,0,0,
+	//~ 0,0,0,2,2,2,0,0,0,0,
+	//~ 0,0,0,2,2,0,0,0,0,0,
+	//~ 0,0,0,0,2,0,0,0,0,0,
+	//~ 0,0,0,0,1,0,0,0,2,2,
+	//~ 0,0,0,0,0,0,0,0,2,1
+	//~ ];
 
 
-	var pf = new pathFinder(maze,10,10);
-	pf.displayGrid();
-	pf.computeDistances(4,4);
-	pf.displayDistances();
+	//~ var pf = new pathFinder(maze,10,10);
+	//~ pf.displayGrid();
+	//~ pf.computeDistances(4,4);
+	//~ pf.displayDistances();
 
-}
+//~ }
