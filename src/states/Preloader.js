@@ -6,9 +6,11 @@ class Preloader extends Phaser.State {
 		game.load.tilemap('level4', 'Ressources/Niveaux/lvl4.json', null, Phaser.Tilemap.TILED_JSON)
 		game.load.tilemap('level5', 'Ressources/Niveaux/lvl5.json', null, Phaser.Tilemap.TILED_JSON)
 
-		game.load.image('tiles', 'Ressources/Graphisme/TileSetCut.png');
+		game.load.image('tiles', 'Ressources/Graphisme/tileSet/TileSet.png');
+		game.load.image('BodyBot', 'Ressources/Graphisme/Asset/BodyPlayer.png')
+		game.load.image('HeadBot', 'Ressources/Graphisme/Asset/HeadBot.png')
 
-		game.load.spritesheet('dude', 'Ressources/dude.png', 32, 48);
+		game.load.spritesheet('alien', 'Ressources/Graphisme/Asset/alien_sprite.png', 192, 192);
 		game.load.spritesheet('torch', 'Ressources/Graphisme/torch/torchMask.png', 2000, 2000)
 
 		game.load.audio('AlienIn', ['Ressources/Sound/AlienIn.mp3', 'Ressources/Sound/AlienIn.ogg']);
@@ -21,13 +23,15 @@ class Preloader extends Phaser.State {
 		game.load.audio('HearthSound', ['Ressources/Sound/HearthSound.mp3', 'Ressources/Sound/HearthSound.ogg']);
 		game.load.audio('AlienNoise1', ['Ressources/Sound/AlienNoise1.mp3', 'Ressources/Sound/AlienNoise1.ogg']);
 		game.load.audio('ObjectifLight', ['Ressources/Sound/ObjectifLight.mp3', 'Ressources/Sound/ObjectifLight.ogg']);
-		game.load.audio('Lamp', ['Ressources/Sound/Lamp.mp3', 'Ressources/Sound/Lamp.ogg']);
-		
-		
+		game.load.audio('Lamp', ['Ressources/Sound/lamp.mp3', 'Ressources/Sound/lamp.ogg']);
+
 		//HUD:
 		game.load.image('gauge', 'Ressources/Graphisme/HUD/gauge.png');
-	    game.load.image('needle', 'Ressources/Graphisme/HUD/needle.png');
-	    game.load.image('circle', 'Ressources/Graphisme/HUD/circle.png');
+	  game.load.image('needle', 'Ressources/Graphisme/HUD/needle.png');
+	  game.load.image('circle', 'Ressources/Graphisme/HUD/circle.png');
+
+
+
 	}
 
 	create () {

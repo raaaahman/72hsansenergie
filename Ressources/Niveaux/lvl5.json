@@ -18,25 +18,26 @@
 
     },
  "renderorder":"right-down",
- "tileheight":377,
+ "tileheight":128,
  "tilesets":[
 	 {
-	 "firstgid":1,
-	 "image":"../Graphisme/TileSetCut.png",
-	 "imageheight":377,
-	 "imagewidth":13195,
-	 "margin":0,
-	 "name":"mazeTiles",
-	 "properties":
-		 {
+	  "firstgid":1,
+	  "image":"../Graphisme/tileSet/TileSet.png",
+	  "imageheight":128,
+	  "imagewidth":4480,
+	  "margin":0,
+	  "name":"mazeTiles",
+	  "properties":
+	 		{
 
-		 },
-	 "spacing":0,
-	 "tilecount":35,
-	 "tileheight":377,
-	 "tilewidth":377
-	}],
- "tilewidth":377,
+	 		},
+	  "spacing":0,
+	  "tilecount":35,
+	  "tileheight":128,
+	  "tilewidth":128
+	 }],
+ "tilewidth":128,
+ "type":"map",
  "version":1,
  "width":50
 }

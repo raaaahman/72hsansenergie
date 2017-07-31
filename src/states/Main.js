@@ -1,5 +1,5 @@
 
-var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback, difficulty = 1.2
+var map, mapLayer, lights, sprites, player, playerHead, enemy, torch, path, cursors, actionButton, enemyCallback, gameSpeed = 200, difficulty = 1.2
 
 /*var pauseMenu = {
 	x: 400,
@@ -42,7 +42,7 @@ const dirNum = [
 
 var scale = 1
 
-var cellSize = 377 * scale
+var cellSize = 128 * scale
 
 
 
@@ -80,12 +80,14 @@ class Main extends Phaser.State {
 
 				switch (mapLayer.layer.data[j][i].index) {
 					case 28:
-						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150 * difficulty, this.enemyCallback)
+						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'alien', gameSpeed * difficulty, this.enemyCallback)
 						map.putTile(27, i, j, mapLayer)
 						break
 					case 29:
-						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallback)
+						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'BodyBot', gameSpeed, this.playerCallback)
+						playerHead = this.add.image(cellSize * (i + 0.5), cellSize * (j + 0.5), 'HeadBot')
 						map.putTile(35, i, j, mapLayer)
+						map.putTile(27, i, j, lights)
 						break
 					case 32:
 						//Temporary, for we don't have traps now
@@ -124,11 +126,12 @@ class Main extends Phaser.State {
     //ENEMY
     //enemy = new Entity(game, cellSize * 2.5, cellSize * 1.5, 'dude', 180, this.enemyCallback)
     sprites.addChild(enemy)
-    enemy.anchor = {x: 0.5, y: 0.33}
+    enemy.anchor.setTo(0.5, 0.5)
     this.physics.enable(enemy, Phaser.Physics.ARCADE)
-    enemy.animations.add('left', [0, 1, 2, 3], 10, true)
-    enemy.animations.add('turn', [4], 20, true)
-    enemy.animations.add('right', [5, 6, 7, 8], 10, true)
+		enemy.body.setSize(128, 128, 32, 32)
+    enemy.animations.add('stand', [1])
+    enemy.animations.add('walk', [0, 1, 2], 20, true)
+		enemy.play('walk')
 
     enemyCallback = this.enemyCallback
 
@@ -139,25 +142,33 @@ class Main extends Phaser.State {
     torch.animations.add('low', [1])
     sprites.addChild(torch)
     //torch.moveUp()
-    torch.anchor = {x: 0.5, y: 0.5}
+    torch.anchor.setTo(0.5, 0.5)
 
     //Lighted tiles
     lights.bringToTop()
 
     //PLAYER
     //player = new Entity(game, cellSize * 1.5, cellSize * 1.5, 'dude', 150, this.playerCallBack)
-    player.anchor = {x: 0.5, y: 0.33}
+    player.anchor.setTo(0.5, 0.5)
     sprites.addChild(player)
     player.bringToTop()
     this.physics.enable(player, Phaser.Physics.ARCADE)
-    player.animations.add('left', [0, 1, 2, 3], 10, true)
-    player.animations.add('turn', [4], 20, true)
-    player.animations.add('right', [5, 6, 7, 8], 10, true)
+
+		//Player's head
+		playerHead.anchor.setTo(0.5, 0.5)
+		playerHead.bringToTop()
+
+
     cursors = this.input.keyboard.createCursorKeys()
     actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+		game.input.keyboard.addCallbacks(
+			this,
+			null,
+			this.togglePause
+		)
 
 
-    player.move('UP')
+    //player.move('UP')
     path.computeDistances(player.targetX, player.targetY)
     this.enemyCallback();
 
@@ -219,14 +230,20 @@ class Main extends Phaser.State {
 
     update() {
 
+				this.physics.arcade.overlap(player, enemy, this.resetGame, this.checkRunaway)
+
         var dx = enemy.x - player.x
         var dy = enemy.y - player.y
         var monsterDistance2 = dx * dx + dy * dy
 
         player.checkPos()
         enemy.checkPos()
-        torch.x = player.x
-        torch.y = player.y
+
+        playerHead.x = player.x
+        playerHead.y = player.y
+				torch.x = playerHead.x
+				torch.y = playerHead.y
+
         //random electric sound
         if (Math.random() < 0.001) {
             if (ElectricSound != undefined && !ElectricSound.isPlaying)
@@ -271,8 +288,9 @@ class Main extends Phaser.State {
 
         //console.log(game.input.mousePointer.worldX, game.input.mousePointer.worldY)
         var mouse = game.input.mousePointer
-        var viewAngle = Math.atan2(mouse.worldY - player.body.y, mouse.worldX - player.body.x)
-        player.rotation = viewAngle
+        var viewAngle = Math.atan2(mouse.worldY - player.y, mouse.worldX - player.x)
+
+        playerHead.rotation = viewAngle
 
 
 
@@ -297,7 +315,7 @@ class Main extends Phaser.State {
             if (monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold) {
                 //Monster is confused and run away (10 steps):
 
-            if (AlienNear2Sound != undefined && !AlienNear2Sound.isPlaying())
+            if (AlienNear2Sound != undefined && !AlienNear2Sound.isPlaying)
                     AlienNear2Sound.play();
 
             if (runaway < 3)
@@ -327,7 +345,7 @@ class Main extends Phaser.State {
     }
 
   /*render () {
-		game.debug.soundInfo(LampSound, 40, 40)
+		game.debug.bodyInfo()
 	}*/
 
     enteredCorridor() {
@@ -460,11 +478,16 @@ class Main extends Phaser.State {
 
     }
 
+	checkRunaway () {
+		return runaway == 0
+	}
+
 	resetGame() {
 		player.visible = false
 		player.alive = false
+		playerHead.visible = false
 
-		runaway = 3
+		runaway = 5
 
 		currentLevel = 1
 		game.time.events.add(750, game.state.start, game.state, 'Main')
@@ -492,15 +515,15 @@ class Main extends Phaser.State {
 				game.paused = false
 
 				//Erase pause menu
-				pauseMenu.unpauseButton.destroy()
+				//pauseMenu.unpauseButton.destroy()
 			}
 			else {
 				game.paused = true
 
 				//Add the Pause menu
-				pauseMenu.unpauseButton = this.add.text(pauseMenu.x, pauseMenu.y, 'Resume', { font: '48px Arial', fill: '#fff'})
-				sprites.add(pauseMenu.unpauseButton)
-				pauseMenu.unpauseButton.bringToTop()
+				//pauseMenu.unpauseButton = this.add.text(pauseMenu.x, pauseMenu.y, 'Resume', { font: '48px Arial', fill: '#fff'})
+				//sprites.add(pauseMenu.unpauseButton)
+				//pauseMenu.unpauseButton.bringToTop()
 
 			}
 		}
