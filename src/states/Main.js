@@ -62,13 +62,15 @@ class Main extends Phaser.State {
 						enemy = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 180, this.enemyCallback)
 						map.putTile(27, i, j, mapLayer)
 						break
-					/*case 29:
+					case 29:
 						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallBack)
 						map.putTile(35, i, j, mapLayer)
-						break*/
-					case 30:
-						player = new Entity(game, cellSize * (i + 1.5), cellSize * (j + 0.5), 'dude', 150, this.playerCallback)
 						break
+					case 32:
+						//Temporary, for we don't have traps now
+						map.putTile(27, i, j, mapLayer)
+						break
+					case 34: //Temporary, no differencies between lights
 					case 35:
 						map.putTile(27, i, j, lights)
 						break
