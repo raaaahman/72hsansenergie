@@ -114,6 +114,7 @@ class PathFinder {
 		//Manage teleporters:
 		if(this.activateTp && (this.grid[pos] == this.tp))
 		{
+		    AlienInSound.play();
 			for(var j=0; j < this.teleporters.length; j++)
 			{
 				var next = this.teleporters[j];
