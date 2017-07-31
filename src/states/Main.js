@@ -1,5 +1,5 @@
 
-var map, mapLayer, lights, sprites, player, playerHead, enemy, torch, path, cursors, actionButton, enemyCallback, gameSpeed = 200, difficulty = 1.2
+var map, mapLayer, lights, sprites, player, playerHead, enemy, torch, path, cursors, actionButton, enemyCallback, gameSpeed = 200, difficulty = 1.2, trapsClosed
 
 /*var pauseMenu = {
 	x: 400,
@@ -89,6 +89,9 @@ class Main extends Phaser.State {
 						map.putTile(35, i, j, mapLayer)
 						map.putTile(27, i, j, lights)
 						break
+					case 31:
+						map.putTile(30, i, j, mapLayer)
+						break
 					case 32:
 						//Temporary, for we don't have traps now
 						map.putTile(27, i, j, mapLayer)
@@ -130,7 +133,7 @@ class Main extends Phaser.State {
     this.physics.enable(enemy, Phaser.Physics.ARCADE)
 		enemy.body.setSize(128, 128, 32, 32)
     enemy.animations.add('stand', [1])
-    enemy.animations.add('walk', [0, 1, 2], 20, true)
+    enemy.animations.add('walk', [0, 1, 2], 10, true)
 		enemy.play('walk')
 
     enemyCallback = this.enemyCallback
@@ -225,7 +228,9 @@ class Main extends Phaser.State {
     }
     lampIsPlaying = 0;
 
-    game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+    game.camera.focusOn(player)
+
+		game.camera.follow(player); game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 	}
 
     update() {
@@ -250,30 +255,35 @@ class Main extends Phaser.State {
                 ElectricSound.play();
         }
 
-        if (cursors.left.isDown) {
-            player.move('LEFT')
-            if (PlayerMoveSound != undefined)
-                PlayerMoveSound.resume();
-        }
-        else if (cursors.right.isDown) {
-            player.move('RIGHT')
-            if (PlayerMoveSound != undefined)
-                PlayerMoveSound.resume();
-        }
-        else if (cursors.up.isDown) {
-            player.move('UP')
-            if (PlayerMoveSound != undefined)
-                PlayerMoveSound.resume();
-        }
-        else if (cursors.down.isDown) {
-            player.move('DOWN')
-            if (PlayerMoveSound != undefined)
-                PlayerMoveSound.resume();
-        }
-        else {
-            if (PlayerMoveSound != undefined)
-                PlayerMoveSound.pause();
-        }
+				if (player.alive) {
+
+					if (cursors.left.isDown) {
+	            player.move('LEFT')
+	            if (PlayerMoveSound != undefined)
+	                PlayerMoveSound.resume();
+	        }
+	        else if (cursors.right.isDown) {
+	            player.move('RIGHT')
+	            if (PlayerMoveSound != undefined)
+	                PlayerMoveSound.resume();
+	        }
+	        else if (cursors.up.isDown) {
+	            player.move('UP')
+	            if (PlayerMoveSound != undefined)
+	                PlayerMoveSound.resume();
+	        }
+	        else if (cursors.down.isDown) {
+	            player.move('DOWN')
+	            if (PlayerMoveSound != undefined)
+	                PlayerMoveSound.resume();
+	        }
+	        else {
+	            if (PlayerMoveSound != undefined)
+	                PlayerMoveSound.pause();
+	        }
+
+				}
+
 
 
         //Alien Sound
@@ -454,20 +464,34 @@ class Main extends Phaser.State {
 
 	    //Load a new level
 	    if (player.tileType == 30) {
-	        if (currentLevel < LEVEL_MAX) {
+				map.putTile(31, player.targetX, player.targetY)
 
-	            torch.visible = false
+        if (currentLevel < LEVEL_MAX) {
 
-	            this.runaway = 20
+            torch.visible = false
+						player.alive = false
 
-	            currentLevel++
+            this.runaway = 20
 
-	            game.time.events.add(Phaser.Timer.SECOND * 1.5, game.state.start, game.state, 'Main')
-	        }
+            currentLevel++
 
-				game.time.events.add(1500, game.state.start, game.state, 'Main')
+            game.time.events.add(1500, game.state.start, game.state, 'Main')
+        } else if (trapsClosed == true) {
+
+					currentLevel = 1
+
+					difficulty *= 0.5
+
+					torch.visible = false
+					player.alive = false
+					this.runaway = 20
+
+
+					game.time.events.add(1500, game.state.start, game.state, 'Main')
+				} else {
+					trapsClosed == true
+				}
 			}
-
 
 		//Charge torch if on light tile:
 		if( (player.tileType  == 35 || player.tileType  == 34) && needle.angle <= 60)
@@ -476,7 +500,7 @@ class Main extends Phaser.State {
 	        needle.body.angularVelocity = 10;
 	    }
 
-    }
+	}
 
 	checkRunaway () {
 		return runaway == 0
@@ -490,6 +514,7 @@ class Main extends Phaser.State {
 		runaway = 5
 
 		currentLevel = 1
+
 		game.time.events.add(750, game.state.start, game.state, 'Main')
 	}
 	/*

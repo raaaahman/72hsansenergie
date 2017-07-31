@@ -6,8 +6,8 @@ class Entity extends Phaser.Sprite {
 		this.locked 	= false
 		this.unlockedCallback = unlockedCallback
 		this.dir 			= 'NONE'
-		this.posX			= startX / cellSize
-		this.posY			= startY / cellSize
+		this.posX			= (startX - cellSize / 2 ) / cellSize
+		this.posY			= (startY - cellSize / 2 ) / cellSize
 		this.targetX 	= Math.round(this.posX)
 		this.targetY 	= Math.round(this.posY)
 		this.lastX		= this.targetX
@@ -96,7 +96,7 @@ class Entity extends Phaser.Sprite {
 				this.dir 							= dir
 				this.body.velocity.x 	= DIR[dir].x * this.speed
 				this.body.velocity.y 	= DIR[dir].y * this.speed
-				
+
 				this.angle = DIR[dir].angle
 
 				this.locked = true
