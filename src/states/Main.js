@@ -458,7 +458,7 @@ class Main extends Phaser.State {
 
 	            torch.visible = false
 
-	            this.runaway = 20
+	            runaway = 20
 
 	            currentLevel++
 
