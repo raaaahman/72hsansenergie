@@ -25,11 +25,11 @@ var currentLevel = 1
 const LEVEL_MAX = 5
 
 const DIR = {
-    NONE: { x: 0, y: 0 },
-    LEFT: { x: -1, y: 0 },
-    RIGHT: { x: 1, y: 0 },
-    DOWN: { x: 0, y: 1 },
-    UP: { x: 0, y: -1 }
+    NONE: { x: 0, y: 0 , angle: 42},
+    LEFT: { x: -1, y: 0, angle: 0},
+    RIGHT: { x: 1, y: 0, angle: 180},
+    DOWN: { x: 0, y: 1, angle: -90},
+    UP: { x: 0, y: -1, angle: 90}
 }
 
 const dirNum = [
@@ -114,7 +114,7 @@ class Main extends Phaser.State {
 
 		runaway = 0
 
-		path.displayGrid()
+		//path.displayGrid() //Show the grid of the path finder.
 
 		sprites = this.add.group()
 		sprites.addChild(lights)

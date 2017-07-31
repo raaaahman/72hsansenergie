@@ -80,7 +80,6 @@ class Entity extends Phaser.Sprite {
 
 	move(dir) {
 
-
 		if(!this.locked)
 		{
 
@@ -97,6 +96,8 @@ class Entity extends Phaser.Sprite {
 				this.dir 							= dir
 				this.body.velocity.x 	= DIR[dir].x * this.speed
 				this.body.velocity.y 	= DIR[dir].y * this.speed
+				
+				this.angle = DIR[dir].angle
 
 				this.locked = true
 			}
