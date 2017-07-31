@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="AlienNear_data" version="1.3.0" audacityversion="2.1.2" sel0="0.0000000000" sel1="3.1714965986" vpos="0" h="0.0000000000" zoom="86.1328125000" rate="44100.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+	<tags/>
+	<wavetrack name="Alien_Isolation_-_Alien_Sounds" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="139863">
+				<waveblock start="0">
+					<simpleblockfile filename="e000015a.au" len="133801" min="-0.290809" max="0.306446" rms="0.040653"/>
+				</waveblock>
+				<waveblock start="133801">
+					<simpleblockfile filename="e000089d.au" len="6062" min="-0.003294" max="0.00353" rms="0.000581"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="Alien_Isolation_-_Alien_Sounds" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="44100" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="139863">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000a58.au" len="133801" min="-0.289886" max="0.306502" rms="0.040653"/>
+				</waveblock>
+				<waveblock start="133801">
+					<simpleblockfile filename="e0000275.au" len="6062" min="-0.003294" max="0.00353" rms="0.000581"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+</project>
