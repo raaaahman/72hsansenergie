@@ -174,31 +174,31 @@ class Main extends Phaser.State {
 
 
 	//HUD
-	hudCoordinates = {x:150,y:700}
+	hudCoordinates = {x:100,y:550}
     hud = game.add.group()
 
     gauge = game.add.sprite(0, 0, 'gauge')
     needle = game.add.sprite(0, 0, 'needle')
     circle = game.add.sprite(0, 0, 'circle')
-    
+
     gauge.anchor.setTo(0.5, 0.5)
     needle.anchor.setTo(0.5, 0.5)
     circle.anchor.setTo(0.5, 0.5)
-    
+
     game.physics.enable(needle, Phaser.Physics.ARCADE)
-    
+
     needle.body.angularDrag = 2
     needle.angle = 60
-    
+
     hud.addChild(gauge)
     hud.addChild(needle)
     hud.addChild(circle)
-    
+
     hud.fixedToCamera = true
-	
+
 	hud.setAll('x',hudCoordinates.x)
 	hud.setAll('y',hudCoordinates.y)
-	
+
 
     // Sound Initialisation
     AlienInSound = game.add.audio('AlienIn');
@@ -295,11 +295,11 @@ class Main extends Phaser.State {
 
 
       if (mouse.isDown && player.alive && needle.angle > -60) {
-      	
+
       	//Update HUD:
       	if((player.tileType != 35) && (player.tileType != 34))
       		needle.body.angularVelocity = -5;
-      	
+
           if (!LampSound.isPlaying && lampIsPlaying == 0)
             LampSound.play();
 
@@ -330,18 +330,18 @@ class Main extends Phaser.State {
             lampIsPlaying = 0;
             torch.animations.play('off')
         }
-        
-        
-        
+
+
+
         //Update HUD:
         if(needle.angle > 60)
 	    needle.angle = 60
-	    
+
 	    if(needle.angle < -60)
 	        needle.angle = -60
-        
-        
-        
+
+
+
     }
 
   /*render () {
@@ -467,8 +467,8 @@ class Main extends Phaser.State {
 
 				game.time.events.add(1500, game.state.start, game.state, 'Main')
 			}
-			
-			
+
+
 		//Charge torch if on light tile:
 		if( (player.tileType  == 35 || player.tileType  == 34) && needle.angle <= 60)
 	    {
