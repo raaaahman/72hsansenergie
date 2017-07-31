@@ -7,7 +7,7 @@ class Preloader extends Phaser.State {
 		game.load.tilemap('level4', 'Ressources/lvl4/lvl4.json', null, Phaser.Tilemap.TILED_JSON)
 		game.load.tilemap('level4', 'Ressources/lvl4/lvl4.json', null, Phaser.Tilemap.TILED_JSON)
 
-		game.load.image('tiles', 'Ressources/Graphisme/tileSet/TileSetCut.png');
+		game.load.image('tiles', 'Ressources/Graphisme/tileSet/TileSet.png');
 
 		game.load.spritesheet('dude', 'Ressources/dude.png', 32, 48);
 		game.load.spritesheet('torch', 'Ressources/Graphisme/torch/torchMask.png', 2000, 2000)
