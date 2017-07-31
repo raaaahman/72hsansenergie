@@ -153,7 +153,7 @@ class Main extends Phaser.State {
 
 				if(runaway < 3)
 					runaway = 10
-				console.log("RUNAWAY!!")
+				//console.log("RUNAWAY!!")
 
 			}
 
@@ -215,16 +215,16 @@ class Main extends Phaser.State {
 		{
 			//Monster tries to avoid player:
 			dir = path.worstDir(enemy.targetX, enemy.targetY)
-			console.log("Monster is Running Away! RunAwayCounter=",runaway)
+			//console.log("Monster is Running Away! RunAwayCounter=",runaway)
 			runaway--
-			console.log("Monster is Running Away! RunAwayCounter=",runaway)
+			//console.log("Monster is Running Away! RunAwayCounter=",runaway)
 		}
 		else
 		{
 			//Monster try to catch player:
 			dir = path.bestDir(enemy.targetX, enemy.targetY)
 
-			console.log("Monster is Tracking the Player! RunAwayCounter=",runaway);
+			//console.log("Monster is Tracking the Player! RunAwayCounter=",runaway);
 		}
 
 		if(dir < 4)
@@ -240,15 +240,15 @@ class Main extends Phaser.State {
 			}
 			else
 			{
-				console.log("Monster Regular move!");
+				//console.log("Monster Regular move!");
 				//Regular move:
-				console.log('enemy move ',dirNum[dir]);
+				//console.log('enemy move ',dirNum[dir]);
 				enemy.move(dirNum[dir])
 			}
 		}
 		else
 		{
-			console.log("Monster has lost the player! Waiting...");
+			//console.log("Monster has lost the player! Waiting...");
 			//No moves done, wait a little, then try again!
 			setTimeout(enemyCallback, 250 + Math.random()*500);
 		}
