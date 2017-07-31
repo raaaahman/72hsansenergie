@@ -54,7 +54,7 @@ class Main extends Phaser.State {
 		enemyCallback = this.enemyCallback
 
 		runaway = 0
-
+		
 		path.displayGrid()
 
 		sprites = this.add.group()
@@ -150,9 +150,11 @@ class Main extends Phaser.State {
 			if(monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold)
 			{
 				//Monster is confused and run away (10 steps):
+
 				if(runaway < 3)
 					runaway = 10
 				console.log("RUNAWAY!!")
+
 			}
 
 		}
@@ -208,6 +210,7 @@ class Main extends Phaser.State {
 		var dir = 4 //default dir is 4 (4 means 'NONE').
 		
 		//If the monster is running away:
+
 		if(runaway > 0)
 		{
 			//Monster tries to avoid player:
@@ -215,12 +218,12 @@ class Main extends Phaser.State {
 			console.log("Monster is Running Away! RunAwayCounter=",runaway)
 			runaway--
 			console.log("Monster is Running Away! RunAwayCounter=",runaway)
-			
 		}
 		else
 		{
 			//Monster try to catch player:
 			dir = path.bestDir(enemy.targetX, enemy.targetY)
+
 			console.log("Monster is Tracking the Player! RunAwayCounter=",runaway);
 		}
 
