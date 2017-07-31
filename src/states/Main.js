@@ -1,5 +1,13 @@
 var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, pauseButton, enemyCallback, runaway
 
+var pauseMenu = {
+	x: 400,
+	y: 300,
+	width: 200,
+	height: 120,
+	unpauseButton: ''
+}
+
 var currentLevel = 1
 const LEVEL_MAX = 5
 
@@ -136,6 +144,8 @@ class Main extends Phaser.State {
 		//Controls
 		cursors 			= this.input.keyboard.createCursorKeys()
     pauseButton 	= this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+		//Unused
+		//game.input.mousePointer.leftButton.onDown.add(this.handleMouseClick, this)
 
 		this.input.keyboard.addCallbacks(
 			this,
@@ -158,6 +168,10 @@ class Main extends Phaser.State {
 		//For some reason, this value not to be set to false manually for the pause could have any effect
 		game.paused = false
 
+	}
+
+	check() {
+		console.log("Game paused?", game.paused)
 	}
 
 	update() {
@@ -326,15 +340,41 @@ class Main extends Phaser.State {
 
 		}
 	}
+	/*
+	Disabled
+	handleMouseClick () {
+		console.log("click!")
+		if (game.paused &&
+		game.input.mousePointer.x > pauseMenu.x &&
+		game.input.mousePointer.x < pauseMenu.x + pauseMenu.width &&
+		game.input.mousePointer.y > pauseMenu.y &&
+		game.input.mousePointer.y < pauseMenu.y + pauseMenu.height) {
+			this.togglePause(32)
+		}
+	}
+	*/
 
-	togglePause () {
-		//console.log(this.input.keyboard.lastKey)
-			if (this.input.keyboard.lastKey.keyCode === Phaser.KeyCode.SPACEBAR) {
-				if (game.paused == true)
-					game.paused = false
-				else
-					game.paused = true
+	togglePause (control) {
+
+		console.log(control.keyCode)
+		if (control === Phaser.KeyCode.SPACEBAR
+			|| control.keyCode === Phaser.KeyCode.SPACEBAR) {
+			if (game.paused == true) {
+				game.paused = false
+
+				//Erase pause menu
+				pauseMenu.unpauseButton.destroy()
 			}
+			else {
+				game.paused = true
+
+				//Add the Pause menu
+				pauseMenu.unpauseButton = this.add.text(pauseMenu.x, pauseMenu.y, 'Resume', { font: '48px Arial', fill: '#fff'})
+				sprites.add(pauseMenu.unpauseButton)
+				pauseMenu.unpauseButton.bringToTop()
+
+			}
+		}
 		}
 
 }
