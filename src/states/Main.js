@@ -1,5 +1,4 @@
-var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, actionButton, enemyCallback
-var runaway
+var map, mapLayer, lights, sprites, player, enemy, torch, path, cursors, pauseButton, enemyCallback, runaway
 
 var currentLevel = 1
 const LEVEL_MAX = 5
@@ -93,7 +92,7 @@ class Main extends Phaser.State {
 
 
 		runaway = 0
-		
+
 		path.displayGrid()
 
 		sprites = this.add.group()
@@ -133,10 +132,16 @@ class Main extends Phaser.State {
 		player.animations.add('left', [0, 1, 2, 3], 10, true)
     player.animations.add('turn', [4], 20, true)
     player.animations.add('right', [5, 6, 7, 8], 10, true)
-		cursors = this.input.keyboard.createCursorKeys()
-    actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
 
+		//Controls
+		cursors 			= this.input.keyboard.createCursorKeys()
+    pauseButton 	= this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
 
+		this.input.keyboard.addCallbacks(
+			this,
+			null,
+			this.togglePause
+		)
 
 
 		//Examples of binding events to enter tile function
@@ -148,7 +153,10 @@ class Main extends Phaser.State {
 		this.enemyCallback();
 
 
-		game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+		game.camera.follow(player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1)
+
+		//For some reason, this value not to be set to false manually for the pause could have any effect
+		game.paused = false
 
 	}
 
@@ -215,33 +223,33 @@ class Main extends Phaser.State {
 	enteredCorridor() {
 		console.log("It's a corridor")
 	}
-	
+
 	//Function called when the enemy use a tp:
 	enemyEntersTp(x,y){
-		
+
 		//TODO: hide the monster!
-		
+
 		console.log("Enemy enters in the TP!");
-		
+
 		//Move the monster to the given coordinates:
 		enemy.targetX = x
 		enemy.targetY = y
-		
+
 		enemy.body.x = x * cellSize
 		enemy.body.y = y * cellSize
-		
+
 		//Plan the exit of the Tp (a few seconds later):
-		setTimeout(enemyQuitsTp, 2000 + Math.random()*2000);
+		game.time.add(2000 + Math.random()*2000, enemyQuitsTp, this );
 	}
-	
-	
+
+
 	//Function called when the enemy get out of a tp:
 	enemyQuitsTp(){
-		
+
 		//TODO: display the monster!
-		
+
 		console.log("Enemy quits the TP!");
-		
+
 		//Resume the monster's behavior:
 		enemyCallback();
 	}
@@ -253,9 +261,9 @@ class Main extends Phaser.State {
 		if(Math.random() < 0.7)
 			path.computeDistances(player.targetX, player.targetY)
 
-		
+
 		var dir = 4 //default dir is 4 (4 means 'NONE').
-		
+
 		//If the monster is running away:
 
 		if(runaway > 0)
@@ -319,6 +327,15 @@ class Main extends Phaser.State {
 		}
 	}
 
+	togglePause () {
+		//console.log(this.input.keyboard.lastKey)
+			if (this.input.keyboard.lastKey.keyCode === Phaser.KeyCode.SPACEBAR) {
+				if (game.paused == true)
+					game.paused = false
+				else
+					game.paused = true
+			}
+		}
 
 }
 
