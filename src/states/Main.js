@@ -53,7 +53,7 @@ class Main extends Phaser.State {
 
 		enemyCallback = this.enemyCallback
 
-		this.runaway = 0
+		runaway = 0
 
 		path.displayGrid()
 
@@ -150,13 +150,14 @@ class Main extends Phaser.State {
 			if(monsterDistance2 < scopeThreshold2 && Math.abs(monsterAngle - viewAngle) < angleThreshold)
 			{
 				//Monster is confused and run away (10 steps):
-				this.runaway = 10;
+				if(runaway < 3)
+					runaway = 10
+				console.log("RUNAWAY!!")
 			}
 
 		}
 			else
 				torch.animations.play('off')
-
 	}
 
 	/*render () {
@@ -207,18 +208,20 @@ class Main extends Phaser.State {
 		var dir = 4 //default dir is 4 (4 means 'NONE').
 		
 		//If the monster is running away:
-		if(this.runaway > 0)
+		if(runaway > 0)
 		{
 			//Monster tries to avoid player:
 			dir = path.worstDir(enemy.targetX, enemy.targetY)
-			this.runaway--
-			console.log("Monster is Running Away! RunAwayCounter=",this.runaway);
+			console.log("Monster is Running Away! RunAwayCounter=",runaway)
+			runaway--
+			console.log("Monster is Running Away! RunAwayCounter=",runaway)
+			
 		}
 		else
 		{
 			//Monster try to catch player:
 			dir = path.bestDir(enemy.targetX, enemy.targetY)
-			console.log("Monster is Tracking the Player! RunAwayCounter=",this.runaway);
+			console.log("Monster is Tracking the Player! RunAwayCounter=",runaway);
 		}
 
 		if(dir < 4)
