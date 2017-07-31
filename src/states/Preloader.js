@@ -19,7 +19,7 @@ class Preloader extends Phaser.State {
 		game.load.audio('PlayerMove', ['Ressources/Sound/PlayerMove.mp3', 'Ressources/Sound/PlayerMove.ogg']);
 		game.load.audio('ElectricSound', ['Ressources/Sound/ElectricSound.mp3', 'Ressources/Sound/ElectricSound.ogg']);
 		game.load.audio('HearthSound', ['Ressources/Sound/HearthSound.mp3', 'Ressources/Sound/HearthSound.ogg']);
-		game.load.audio('AlienNoise', ['Ressources/Sound/AlienNoise1.mp3', 'Ressources/Sound/AlienNoise1.ogg']);
+		game.load.audio('AlienNoise1', ['Ressources/Sound/AlienNoise1.mp3', 'Ressources/Sound/AlienNoise1.ogg']);
 		game.load.audio('ObjectifLight', ['Ressources/Sound/ObjectifLight.mp3', 'Ressources/Sound/ObjectifLight.ogg']);
 		game.load.audio('Lamp', ['Ressources/Sound/Lamp.mp3', 'Ressources/Sound/Lamp.ogg']);
 	}
