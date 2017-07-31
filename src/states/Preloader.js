@@ -22,6 +22,12 @@ class Preloader extends Phaser.State {
 		game.load.audio('AlienNoise1', ['Ressources/Sound/AlienNoise1.mp3', 'Ressources/Sound/AlienNoise1.ogg']);
 		game.load.audio('ObjectifLight', ['Ressources/Sound/ObjectifLight.mp3', 'Ressources/Sound/ObjectifLight.ogg']);
 		game.load.audio('Lamp', ['Ressources/Sound/Lamp.mp3', 'Ressources/Sound/Lamp.ogg']);
+		
+		
+		//HUD:
+		game.load.image('gauge', 'Ressources/Graphisme/HUD/gauge.png');
+	    game.load.image('needle', 'Ressources/Graphisme/HUD/needle.png');
+	    game.load.image('circle', 'Ressources/Graphisme/HUD/circle.png');
 	}
 
 	create () {
