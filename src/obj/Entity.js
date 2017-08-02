@@ -1,10 +1,11 @@
 class Entity extends Phaser.Sprite {
 
-	constructor(game, startX, startY, img, speed = 150, unlockedCallback = function () {}) {
+	constructor(game, startX, startY, img, speed = 150, unlockedCallback = function () {}, waitingCallback = function () {}) {
 		super(game, startX, startY, img)
 
 		this.locked 	= false
 		this.unlockedCallback = unlockedCallback
+		this.waitingCallback = waitingCallback
 		this.dir 			= 'NONE'
 		this.posX			= (startX - cellSize / 2 ) / cellSize
 		this.posY			= (startY - cellSize / 2 ) / cellSize
@@ -23,6 +24,7 @@ class Entity extends Phaser.Sprite {
 	}
 
 	//This function is used to bind event to particular tiles
+	/*
 	setTrigger(tileIndex, callback, context) {
 		var name = 'onEnterTile' + tileIndex
 		this.events[name] = new Phaser.Signal()
@@ -32,7 +34,7 @@ class Entity extends Phaser.Sprite {
 		}
 
 		this.events[name].add(callback, context)
-	}
+	}*/
 
 	//Update the entity's coordinates and stats depending on its position
 	checkPos () {
@@ -74,6 +76,8 @@ class Entity extends Phaser.Sprite {
 				// console.log("Target Reached!")
 			}
 
+		} else {
+			this.waitingCallback()
 		}
 
 	}

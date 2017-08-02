@@ -1,5 +1,5 @@
 
-var map, mapLayer, lights, sprites, player, playerHead, enemy, torch, path, cursors, actionButton, enemyCallback, gameSpeed = 200, difficulty = 1.2, trapsClosed
+var map, mapLayer, lights, sprites, player, playerHead, enemy, torch, path, cursors, controls, actionButton, enemyCallback, gameSpeed = 200, difficulty = 1.2, trapsClosed
 
 /*var pauseMenu = {
 	x: 400,
@@ -84,7 +84,7 @@ class Main extends Phaser.State {
 						map.putTile(27, i, j, mapLayer)
 						break
 					case 29:
-						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'BodyBot', gameSpeed, this.playerCallback)
+						player = new Entity(game, cellSize * (i + 0.5), cellSize * (j + 0.5), 'BodyBot', gameSpeed, this.playerCallback, this.playerWaitingCallback)
 						playerHead = this.add.image(cellSize * (i + 0.5), cellSize * (j + 0.5), 'HeadBot')
 						map.putTile(35, i, j, mapLayer)
 						map.putTile(27, i, j, lights)
@@ -133,7 +133,7 @@ class Main extends Phaser.State {
     this.physics.enable(enemy, Phaser.Physics.ARCADE)
 		enemy.body.setSize(128, 128, 32, 32)
     enemy.animations.add('stand', [1])
-    enemy.animations.add('walk', [0, 1, 2], 10, true)
+    enemy.animations.add('walk', [0, 1, 2, 3], 10, true)
 		enemy.play('walk')
 
     enemyCallback = this.enemyCallback
@@ -163,6 +163,12 @@ class Main extends Phaser.State {
 
 
     cursors = this.input.keyboard.createCursorKeys()
+		controls = this.input.keyboard.addKeys({
+			'up': Phaser.KeyCode.W,
+			'down': Phaser.KeyCode.S,
+			'right': Phaser.KeyCode.D,
+			'left': Phaser.KeyCode.A
+		})
     actionButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
 		game.input.keyboard.addCallbacks(
 			this,
@@ -257,22 +263,22 @@ class Main extends Phaser.State {
 
 				if (player.alive) {
 
-					if (cursors.left.isDown) {
+					if (cursors.left.isDown || controls.left.isDown) {
 	            player.move('LEFT')
 	            if (PlayerMoveSound != undefined)
 	                PlayerMoveSound.resume();
 	        }
-	        else if (cursors.right.isDown) {
+	        else if (cursors.right.isDown || controls.right.isDown) {
 	            player.move('RIGHT')
 	            if (PlayerMoveSound != undefined)
 	                PlayerMoveSound.resume();
 	        }
-	        else if (cursors.up.isDown) {
+	        else if (cursors.up.isDown || controls.up.isDown) {
 	            player.move('UP')
 	            if (PlayerMoveSound != undefined)
 	                PlayerMoveSound.resume();
 	        }
-	        else if (cursors.down.isDown) {
+	        else if (cursors.down.isDown || controls.down.isDown) {
 	            player.move('DOWN')
 	            if (PlayerMoveSound != undefined)
 	                PlayerMoveSound.resume();
@@ -318,7 +324,7 @@ class Main extends Phaser.State {
 
             var monsterAngle = Math.atan2(enemy.y - player.y, enemy.x - player.x)
 
-            var scopeThreshold2 = cellSize * cellSize * 4
+            var scopeThreshold2 = cellSize * cellSize * 9
             var angleThreshold = Math.PI * 0.1
 
             //If monster is in the light beam:
@@ -379,7 +385,7 @@ class Main extends Phaser.State {
         enemy.body.y = y * cellSize
 
         //Plan the exit of the Tp (a few seconds later):
-        setTimeout(enemyQuitsTp, 2000 + Math.random() * 2000);
+        game.time.events.add(2000 + Math.random() * 2000, enemyQuitsTp, this);
     }
 
 
@@ -493,14 +499,15 @@ class Main extends Phaser.State {
 					trapsClosed == true
 				}
 			}
+	}
 
+	playerWaitingCallback () {
 		//Charge torch if on light tile:
 		if( (player.tileType  == 35 || player.tileType  == 34) && needle.angle <= 60)
-	    {
-	    	console.log("UPDATE!!");
-	        needle.body.angularVelocity = 10;
-	    }
-
+			{
+				//console.log("UPDATE!!");
+					needle.body.angularVelocity = 10;
+			}
 	}
 
 	checkRunaway () {
